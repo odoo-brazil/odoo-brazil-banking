@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_payment_mode_form_inherit" model="ir.ui.view">
+            <field name="name">payment.mode.form.inherit</field>
+            <field name="model">payment.mode</field>
+            <field name="inherit_id" ref="account_banking_payment_export.view_payment_mode_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/group[@col='4']" position="inside">
+                    <group name="l10n-br-config"
+						   string="Localização Brasileira"
+						   colspan="2">
+                        <notebook colspan="4">
+                            <page string="Geral">
+                                <group>
+                                    <field name="type_payment"/>
+									<field name="internal_sequence_id" />
+									<field name="instrucoes"/>
+                                    <field name="invoice_print"/>
+								</group>
+                            </page>
+                            <page string="Boleto"   attrs="{'invisible': [('type_payment', '!=', '00')]}">
+                            </page>
+                            <page string="Cheque" attrs="{'invisible': [('type_payment', '!=', '01')]}">
+                            </page>
+                            <page string="Promissoria" attrs="{'invisible': [('type_payment', '!=', '02')]}">
+                            </page>
+                            <page string="Recibo" attrs="{'invisible': [('type_payment', '!=', '03')]}">
+                            </page>
+                        </notebook>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
