@@ -20,10 +20,13 @@
 #
 ##############################################################################
 
+import logging
 from openerp import models, fields, api
 from datetime import date
 from ..boleto.document import Boleto
 from ..boleto.document import BoletoException
+
+_logger = logging.getLogger(__name__)
 
 
 class AccountMoveLine(models.Model):
@@ -45,16 +48,15 @@ class AccountMoveLine(models.Model):
                     number_type = move_line.company_id.own_number_type
                     if not move_line.boleto_own_number:
                         if number_type == '0':
-                            #TODO: Generate sequence in other moment!
-                            # One invoice have
-                            # nosso_numero = self.env['ir.sequence'].next_by_id(
-                            #     move_line.company_id.own_number_sequence.id)
-                            pass
+                            nosso_numero = self.env['ir.sequence'].next_by_id(
+                                move_line.company_id.own_number_sequence.id)
                         elif number_type == '1':
-                            #FIXME: Quando tiver mais que 10 parcelas vai sair do padrão!
-                            nosso_numero = move_line.name.replace('/','0')
-                        elif number_type == '2':
-                            pass
+                            nosso_numero = \
+                                move_line.transaction_ref.replace('/', '')
+                        else:
+                            nosso_numero = self.env['ir.sequence'].next_by_id(
+                                move_line.payment_mode_id
+                                .internal_sequence_id.id)
                     else:
                         nosso_numero = move_line.boleto_own_number
 
@@ -66,8 +68,10 @@ class AccountMoveLine(models.Model):
                         move_line.boleto_own_number = nosso_numero
 
                     boleto_list.append(boleto.boleto)
-            except BoletoException:
+            except BoletoException as be:
+                _logger.error(be.message or be.value, exc_info=True)
                 continue
-            except:
+            except Exception as e:
+                _logger.error(e.message or e.value, exc_info=True)
                 continue
         return boleto_list
