@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
-# #############################################################################
+##############################################################################
 #
-#    Account Payment Partner module for OpenERP
-#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
+#    Account Payment Boleto module for Odoo
+#    Copyright (C) 2012-2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Miléo <mileo@kmee.com.br>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,22 +20,28 @@
 #
 ##############################################################################
 
-from openerp import models, fields
 
-
-class PaymentMode(models.Model):
-
-    _inherit = 'payment.mode'
-
-    type_payment = fields.Selection(
-        [('00', 'Duplicata'),
-         ('01', 'Cheque'),
-         ('02', 'Promissória'),
-         ('03', 'Recibo'),
-         ('99', 'Outros')],
-        string='Tipo SPED', required=True, default='99')
-    internal_sequence_id = fields.Many2one('ir.sequence', u'Sequência')
-    instrucoes = fields.Text(u'Instruções de cobrança')
-    invoice_print = fields.Boolean(
-        u'Gerar relatorio na conclusão da fatura?')
-
+{
+    'name': 'Odoo Brasil Account Payment Boleto',
+    'version': '0.1',
+    'category': 'Banking addons',
+    'license': 'AGPL-3',
+    'summary': 'Adds payment mode boleto on move lines',
+    'description': """ """,
+    'author': 'KMEE',
+    'website': 'http://www.kmee.com.br',
+    'depends': [
+        'l10n_br_account_payment_mode',
+        'base_transaction_id',
+    ],
+    'data': [
+        'data/boleto_data.xml',
+        'views/res_company.xml',
+        'views/payment_mode.xml',
+        'views/account_move_line.xml',
+        'reports/report_print_button_view.xml',
+    ],
+    'demo': [
+    ],
+    'active': False,
+}

@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    Account Payment Partner module for OpenERP
-#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
+#    Account Payment Boleto module for Odoo
+#    Copyright (C) 2012-2015 KMEE (http://www.kmee.com.br)
 #    @author Luis Felipe Miléo <mileo@kmee.com.br>
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,4 +20,16 @@
 #
 ##############################################################################
 
-from . import document
+from openerp import models, fields
+
+
+class ResCompany(models.Model):
+    _inherit = 'res.company'
+
+    own_number_type = fields.Selection(
+        [('0', 'Sequêncial'),
+         ('1', 'Numero da Fatura'),
+         ('2', 'Numero da Move Line'),], string=u'Tipo de nosso número',
+        default='2')
+    own_number_sequence = fields.Many2one('ir.sequence',
+                    string=u'Sequência do Nosso Número', required=True)
