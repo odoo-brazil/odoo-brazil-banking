@@ -29,6 +29,8 @@ import datetime
 import re
 import string
 import unicodedata
+import time
+from decimal import *
 
 
 class Cnab240(Cnab):
@@ -67,22 +69,23 @@ class Cnab240(Cnab):
         :return:
         """
         return {
-            'arquivo_data_de_geracao': 27062012,
-            'arquivo_hora_de_geracao': 112000,
+            'arquivo_data_de_geracao': self.data_hoje(),
+            'arquivo_hora_de_geracao': self.hora_agora(),
+            # TODO: Número sequencial de arquivo
             'arquivo_sequencia': 1,
             'cedente_inscricao_tipo': self.inscricao_tipo,
             'cedente_inscricao_numero': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)),
-            'cedente_agencia': int(self.order.mode.bank_id.bra_number),
+            'cedente_agencia': int(
+                self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
-            'cedente_agencia_conta_dv': int(
-                self.order.mode.bank_id.bra_number_dig),
+            'cedente_agencia_conta_dv':
+                self.order.mode.bank_id.bra_number_dig,
             'cedente_nome': self.order.company_id.legal_name,
-            'cedente_codigo_agencia_digito': int(
-                self.order.mode.bank_id.bra_number_dig),
+            'cedente_codigo_agencia_digito':
+                self.order.mode.bank_id.bra_number_dig,
             'arquivo_codigo': 1,  # Remessa/Retorno
-            'reservado_cedente_campo': u'REMESSA-TESTE',
-            'servico_operacao': u'R'
+            'servico_operacao': u'R',
         }
 
     def format_date(self, srt_date):
@@ -90,11 +93,7 @@ class Cnab240(Cnab):
             srt_date, '%Y-%m-%d').strftime('%d%m%Y'))
 
     def nosso_numero(self, format):
-        digito = format[-1:]
-        carteira = format[:3]
-        nosso_numero = re.sub(
-            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
-        return carteira, nosso_numero, digito
+        pass
 
     def cep(self, format):
         sulfixo = format[-3:]
@@ -109,34 +108,38 @@ class Cnab240(Cnab):
             return 1
 
     def rmchar(self, format):
-        return re.sub('[%s]' % re.escape(string.punctuation), '', format or '')
+        return re.sub('[%s]' % re.escape(string.punctuation), '',
+                      format or '')
 
     def _prepare_segmento(self, line):
         """
-
         :param line:
         :return:
         """
-        carteira, nosso_numero, digito = self.nosso_numero(
-            line.move_line_id.transaction_ref)  # TODO: Improve!
+
         prefixo, sulfixo = self.cep(line.partner_id.zip)
         return {
-            'cedente_agencia': 4459,  # FIXME
-            'cedente_conta': 17600,  # FIXME
-            'cedente_agencia_conta_dv': 6,
-            'carteira_numero': int(carteira),
-            'nosso_numero': int(nosso_numero),
-            'nosso_numero_dv': int(digito),
+            'cedente_agencia': int(self.order.mode.bank_id.bra_number),
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
+            'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
+            'cedente_agencia_conta_dv':
+                self.order.mode.bank_id.bra_number_dig,
             'identificacao_titulo': u'0000000',  # TODO
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
-            'valor_titulo': Decimal('100.00'),
-            'especie_titulo': 8,  # TODO:
-            'aceite_titulo': u'A',  # TODO:
+            'valor_titulo': Decimal(str(line.amount_currency)).quantize(
+                Decimal('1.00'), rounding=ROUND_DOWN),
+            # TODO: Código adotado para identificar o título de cobrança.
+            # 8 é Nota de cŕedito comercial
+            'especie_titulo': 8,
+            # TODO: 'A' se título foi aceito pelo sacado. 'N' se não foi.
+            'aceite_titulo': u'A',
             'data_emissao_titulo': self.format_date(
                 line.ml_date_created),
-            'juros_mora_taxa_dia': Decimal('2.00'),
+            # TODO: trazer taxa de juros do Odoo. Depende do valor do 27.3P
+            # CEF/FEBRABAN e Itaú não tem.
+            'juros_mora_taxa_dia': Decimal('0.00'),
             'valor_abatimento': Decimal('0.00'),
             'sacado_inscricao_tipo': int(
                 self.sacado_inscricao_tipo(line.partner_id)),
@@ -144,16 +147,19 @@ class Cnab240(Cnab):
                 self.rmchar(line.partner_id.cnpj_cpf)),
             'sacado_nome': line.partner_id.legal_name,
             'sacado_endereco': (
-                line.partner_id.street + ',' + line.partner_id.number),
+                line.partner_id.street + ' ' + line.partner_id.number),
             'sacado_bairro': line.partner_id.district,
             'sacado_cep': int(prefixo),
             'sacado_cep_sufixo': int(sulfixo),
             'sacado_cidade': line.partner_id.l10n_br_city_id.name,
             'sacado_uf': line.partner_id.state_id.code,
+            # TODO: campo para identificar o protesto. '1' = Protestar,
+            # '3' = Não protestar, '9' = Cancelar protesto automático
             'codigo_protesto': 3,
             'prazo_protesto': 0,
-            'codigo_baixa': 0,
-            'prazo_baixa': 0,
+            'codigo_baixa': 2,
+            'prazo_baixa': 0,  # De 5 a 120 dias.
+            'controlecob_data_gravacao': self.data_hoje(),
         }
 
     def remessa(self, order):
@@ -169,3 +175,9 @@ class Cnab240(Cnab):
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(
             'NFKD', remessa).encode('ascii', 'ignore')
+
+    def data_hoje(self):
+        return (int(time.strftime("%d%m%Y")))
+
+    def hora_agora(self):
+        return (int(time.strftime("%H%M%S")))
