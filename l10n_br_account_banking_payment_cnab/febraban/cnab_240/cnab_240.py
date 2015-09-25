@@ -66,17 +66,21 @@ class Cnab240(Cnab):
         :param:
         :return:
         """
+        #    'arquivo_data_de_geracao': 27062012,
+        data_de_geracao = self.order.date_created[0:4] + self.order.date_created[5:7] + self.order.date_created[8:11]
+        hora_de_geracao = str(datetime.datetime.now().hour-3) + str(datetime.datetime.now().minute)
+
         return {
-            'arquivo_data_de_geracao': 27062012,
-            'arquivo_hora_de_geracao': 112000,
-            'arquivo_sequencia': 1,
+            'arquivo_data_de_geracao': int(data_de_geracao),
+            'arquivo_hora_de_geracao': int(hora_de_geracao),
+            'arquivo_sequencia':self.order.id,
             'cedente_inscricao_tipo': self.inscricao_tipo,
             'cedente_inscricao_numero': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_agencia_conta_dv': int(
-                self.order.mode.bank_id.bra_number_dig),
+                self.order.mode.bank_id.acc_number_dig),
             'cedente_nome': self.order.company_id.legal_name,
             'cedente_codigo_agencia_digito': int(
                 self.order.mode.bank_id.bra_number_dig),
@@ -118,20 +122,22 @@ class Cnab240(Cnab):
         :return:
         """
         carteira, nosso_numero, digito = self.nosso_numero(
-            line.move_line_id.transaction_ref)  # TODO: Improve!
+            str(line.move_line_id.transaction_ref))  # TODO: Improve!
         prefixo, sulfixo = self.cep(line.partner_id.zip)
+        v_t = "{0:.2f}".format(line.move_line_id.debit), # Decimal('100.00'),
         return {
-            'cedente_agencia': 4459,  # FIXME
-            'cedente_conta': 17600,  # FIXME
-            'cedente_agencia_conta_dv': 6,
+            'cedente_agencia': int(self.order.mode.bank_id.bra_number), # FIXME
+            'cedente_conta': int(self.order.mode.bank_id.acc_number), # FIXME
+            'cedente_agencia_conta_dv': int(
+                self.order.mode.bank_id.acc_number_dig),
             'carteira_numero': int(carteira),
             'nosso_numero': int(nosso_numero),
             'nosso_numero_dv': int(digito),
-            'identificacao_titulo': u'0000000',  # TODO
+            'identificacao_titulo': u'%s' % str(line.move_line_id.move_id.id), # u'0000000',   TODO
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
-            'valor_titulo': Decimal('100.00'),
+            'valor_titulo': Decimal(v_t[0]),
             'especie_titulo': 8,  # TODO:
             'aceite_titulo': u'A',  # TODO:
             'data_emissao_titulo': self.format_date(
