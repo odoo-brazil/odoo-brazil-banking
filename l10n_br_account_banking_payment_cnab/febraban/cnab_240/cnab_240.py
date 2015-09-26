@@ -124,7 +124,6 @@ class Cnab240(Cnab):
         carteira, nosso_numero, digito = self.nosso_numero(
             str(line.move_line_id.transaction_ref))  # TODO: Improve!
         prefixo, sulfixo = self.cep(line.partner_id.zip)
-        v_t = "{0:.2f}".format(line.move_line_id.debit), # Decimal('100.00'),
         return {
             'cedente_agencia': int(self.order.mode.bank_id.bra_number), # FIXME
             'cedente_conta': int(self.order.mode.bank_id.acc_number), # FIXME
@@ -137,7 +136,8 @@ class Cnab240(Cnab):
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
-            'valor_titulo': Decimal(v_t[0]),
+            #'valor_titulo': Decimal(v_t),
+            'valor_titulo': Decimal("{0:,.2f}".format(line.move_line_id.debit)), # Decimal('100.00'),
             'especie_titulo': 8,  # TODO:
             'aceite_titulo': u'A',  # TODO:
             'data_emissao_titulo': self.format_date(
