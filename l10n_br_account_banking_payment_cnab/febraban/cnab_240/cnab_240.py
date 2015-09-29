@@ -66,9 +66,10 @@ class Cnab240(Cnab):
         :param:
         :return:
         """
-        #    'arquivo_data_de_geracao': 27062012,
-        data_de_geracao = self.order.date_created[0:4] + self.order.date_created[5:7] + self.order.date_created[8:11]
-        hora_de_geracao = str(datetime.datetime.now().hour-3) + str(datetime.datetime.now().minute)
+        data_de_geracao = self.order.date_created[8:11] + self.order.date_created[5:7] + self.order.date_created[0:4]
+        #hora_de_geracao = str(datetime.datetime.now().hour-3) + str(datetime.datetime.now().minute)
+        t = datetime.datetime.now() - datetime.timedelta(hours=3) # FIXME
+        hora_de_geracao = t.strftime("%H%M%S")
 
         return {
             'arquivo_data_de_geracao': int(data_de_geracao),
@@ -124,6 +125,10 @@ class Cnab240(Cnab):
         carteira, nosso_numero, digito = self.nosso_numero(
             str(line.move_line_id.transaction_ref))  # TODO: Improve!
         prefixo, sulfixo = self.cep(line.partner_id.zip)
+        if self.order.mode.boleto_aceite == 'S':
+            aceite = 'A'
+        else: 
+            aceite = 'N'
         return {
             'cedente_agencia': int(self.order.mode.bank_id.bra_number), # FIXME
             'cedente_conta': int(self.order.mode.bank_id.acc_number), # FIXME
@@ -138,11 +143,12 @@ class Cnab240(Cnab):
                 line.ml_maturity_date),
             #'valor_titulo': Decimal(v_t),
             'valor_titulo': Decimal("{0:,.2f}".format(line.move_line_id.debit)), # Decimal('100.00'),
-            'especie_titulo': 8,  # TODO:
-            'aceite_titulo': u'A',  # TODO:
+            'especie_titulo': int(self.order.mode.boleto_especie),  
+            'aceite_titulo': u'%s' %(aceite),  # TODO:
             'data_emissao_titulo': self.format_date(
                 line.ml_date_created),
-            'juros_mora_taxa_dia': Decimal('2.00'),
+            #'juros_mora_taxa_dia': Decimal('2.00'),
+            'juros_mora_taxa_dia': Decimal("{0:,.2f}".format(line.move_line_id.debit * 0.00066666667)), # FIXME 
             'valor_abatimento': Decimal('0.00'),
             'sacado_inscricao_tipo': int(
                 self.sacado_inscricao_tipo(line.partner_id)),
@@ -156,8 +162,8 @@ class Cnab240(Cnab):
             'sacado_cep_sufixo': int(sulfixo),
             'sacado_cidade': line.partner_id.l10n_br_city_id.name,
             'sacado_uf': line.partner_id.state_id.code,
-            'codigo_protesto': 3,
-            'prazo_protesto': 0,
+            'codigo_protesto': int(self.order.mode.boleto_protesto),
+            'prazo_protesto': int(self.order.mode.boleto_protesto_prazo),
             'codigo_baixa': 0,
             'prazo_baixa': 0,
         }
