@@ -23,6 +23,9 @@
 
 from ..cnab import Cnab
 from cnab240.tipos import Arquivo
+from cnab240.tipos import Evento
+from cnab240.tipos import Lote
+from cnab240.bancos import itau
 from decimal import Decimal
 from openerp.addons.l10n_br_base.tools.misc import punctuation_rm
 import datetime
@@ -70,7 +73,6 @@ class Cnab240(Cnab):
         #hora_de_geracao = str(datetime.datetime.now().hour-3) + str(datetime.datetime.now().minute)
         t = datetime.datetime.now() - datetime.timedelta(hours=3) # FIXME
         hora_de_geracao = t.strftime("%H%M%S")
-
         return {
             'arquivo_data_de_geracao': int(data_de_geracao),
             'arquivo_hora_de_geracao': int(hora_de_geracao),
@@ -138,7 +140,7 @@ class Cnab240(Cnab):
             'nosso_numero': int(nosso_numero),
             'nosso_numero_dv': int(digito),
             'identificacao_titulo': u'%s' % str(line.move_line_id.move_id.id), # u'0000000',   TODO
-            'numero_documento': line.name,
+            'numero_documento': line.move_line_id.invoice.internal_number,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
             #'valor_titulo': Decimal(v_t),
@@ -176,8 +178,35 @@ class Cnab240(Cnab):
         """
         self.order = order
         self.arquivo = Arquivo(self.bank, **self._prepare_header())
+        codigo_evento = 1
+        evento = Evento(self.bank, codigo_evento) 
+            
         for line in order.line_ids:
-            self.arquivo.incluir_cobranca(**self._prepare_segmento(line))
+            seg = self._prepare_segmento(line)
+            seg_p = itau.registros.SegmentoP(**seg)
+            evento.adicionar_segmento(seg_p)
+            
+            seg_q = itau.registros.SegmentoQ(**seg)
+            evento.adicionar_segmento(seg_q)
+        
+        lote_cobranca = self.arquivo.encontrar_lote(codigo_evento)
+        
+        if lote_cobranca is None:
+            header = itau.registros.HeaderLoteCobranca(**self.arquivo.header.todict())
+            trailer = itau.registros.TrailerLoteCobranca()
+            lote_cobranca = Lote(self.bank, header, trailer) 
+            self.arquivo.adicionar_lote(lote_cobranca)
+
+            if header.controlecob_numero is None:
+                header.controlecob_numero = int('{0}{1:02}'.format(
+                    self.arquivo.header.arquivo_sequencia,
+                    lote_cobranca.codigo))
+
+            if header.controlecob_data_gravacao is None:
+                header.controlecob_data_gravacao = self.arquivo.header.arquivo_data_de_geracao
+   
+        lote_cobranca.adicionar_evento(evento)
+        self.arquivo.trailer.totais_quantidade_registros += len(evento)
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(
             'NFKD', remessa).encode('ascii', 'ignore')
