@@ -102,6 +102,7 @@ class Boleto:
         :param company:
         :return:
         """
+        self.boleto.logo_image = company.logo
         self.boleto.cedente = company.partner_id.legal_name.encode('utf-8')
         self.boleto.cedente_documento = company.cnpj_cpf.encode('utf-8')
         self.boleto.cedente_bairro = company.district
@@ -271,6 +272,14 @@ class BoletoCaixaSigcb(Boleto):
         Boleto.__init__(self, move_line, nosso_numero) 
         self.boleto.nosso_numero = self.nosso_numero
 
+class BoletoSicredi(Boleto):
+
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        Boleto.__init__(self, move_line, nosso_numero) 
+        self.boleto.nosso_numero = self.nosso_numero
 
 dict_boleto = {
     '1' : (BoletoBB, 'Banco do Brasil 18'),
@@ -284,6 +293,7 @@ dict_boleto = {
     '9' : (BoletoSantander101, 'Santander 102'),
     '10': (BoletoStatander101201, 'Santander 101, 201'),
     '11': (BoletoCaixaSigcb, 'Caixa Sigcb'),
+    '12': (BoletoSicredi, 'Sicredi'),
 }
 
 def getBoletoSelection():
