@@ -25,7 +25,7 @@ from ..cnab import Cnab
 from cnab240.tipos import Arquivo
 from cnab240.tipos import Evento
 from cnab240.tipos import Lote
-from cnab240.bancos import itau
+from cnab240.bancos import banco
 from decimal import Decimal
 from openerp.addons.l10n_br_base.tools.misc import punctuation_rm
 import datetime
@@ -183,17 +183,17 @@ class Cnab240(Cnab):
             
         for line in order.line_ids:
             seg = self._prepare_segmento(line)
-            seg_p = itau.registros.SegmentoP(**seg)
+            seg_p = banco.registros.SegmentoP(**seg)
             evento.adicionar_segmento(seg_p)
             
-            seg_q = itau.registros.SegmentoQ(**seg)
+            seg_q = banco.registros.SegmentoQ(**seg)
             evento.adicionar_segmento(seg_q)
         
         lote_cobranca = self.arquivo.encontrar_lote(codigo_evento)
         
         if lote_cobranca is None:
-            header = itau.registros.HeaderLoteCobranca(**self.arquivo.header.todict())
-            trailer = itau.registros.TrailerLoteCobranca()
+            header = banco.registros.HeaderLoteCobranca(**self.arquivo.header.todict())
+            trailer = banco.registros.TrailerLoteCobranca()
             lote_cobranca = Lote(self.bank, header, trailer) 
             self.arquivo.adicionar_lote(lote_cobranca)
 
