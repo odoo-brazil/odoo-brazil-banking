@@ -54,9 +54,10 @@ class AccountMoveLine(models.Model):
                             nosso_numero = \
                                 move_line.transaction_ref.replace('/', '')
                         else:
-                            nosso_numero = self.env['ir.sequence'].next_by_id(
-                                move_line.payment_mode_id
-                                .internal_sequence_id.id)
+                            nosso_numero = \
+                                self.env['ir.sequence'].next_by_id(
+                                    move_line.payment_mode_id.
+                                    internal_sequence_id.id)
                     else:
                         nosso_numero = move_line.boleto_own_number
 

@@ -38,6 +38,7 @@ class Cnab240(Cnab):
     """
 
     """
+
     def __init__(self):
         super(Cnab, self).__init__()
 
@@ -69,14 +70,17 @@ class Cnab240(Cnab):
         :param:
         :return:
         """
-        data_de_geracao = self.order.date_created[8:11] + self.order.date_created[5:7] + self.order.date_created[0:4]
-        #hora_de_geracao = str(datetime.datetime.now().hour-3) + str(datetime.datetime.now().minute)
-        t = datetime.datetime.now() - datetime.timedelta(hours=3) # FIXME
+        data_de_geracao = (self.order.date_created[8:11] +
+                           self.order.date_created[5:7] +
+                           self.order.date_created[0:4])
+        # hora_de_geracao = (str(datetime.datetime.now().hour-3) +
+        #                    str(datetime.datetime.now().minute))
+        t = datetime.datetime.now() - datetime.timedelta(hours=3)  # FIXME
         hora_de_geracao = t.strftime("%H%M%S")
         return {
             'arquivo_data_de_geracao': int(data_de_geracao),
             'arquivo_hora_de_geracao': int(hora_de_geracao),
-            'arquivo_sequencia':self.order.id,
+            'arquivo_sequencia': self.order.id,
             'cedente_inscricao_tipo': self.inscricao_tipo,
             'cedente_inscricao_numero': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)),
@@ -129,28 +133,34 @@ class Cnab240(Cnab):
         prefixo, sulfixo = self.cep(line.partner_id.zip)
         if self.order.mode.boleto_aceite == 'S':
             aceite = 'A'
-        else: 
+        else:
             aceite = 'N'
         return {
-            'cedente_agencia': int(self.order.mode.bank_id.bra_number), # FIXME
-            'cedente_conta': int(self.order.mode.bank_id.acc_number), # FIXME
+            'cedente_agencia': int(
+                self.order.mode.bank_id.bra_number),  # FIXME
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),  # FIXME
             'cedente_agencia_conta_dv': int(
                 self.order.mode.bank_id.acc_number_dig),
             'carteira_numero': int(carteira),
             'nosso_numero': int(nosso_numero),
             'nosso_numero_dv': int(digito),
-            'identificacao_titulo': u'%s' % str(line.move_line_id.move_id.id), # u'0000000',   TODO
+            'identificacao_titulo': u'%s' % str(line.move_line_id.move_id.id),
+            # u'0000000',   TODO
             'numero_documento': line.move_line_id.invoice.internal_number,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
-            #'valor_titulo': Decimal(v_t),
-            'valor_titulo': Decimal("{0:,.2f}".format(line.move_line_id.debit)), # Decimal('100.00'),
-            'especie_titulo': int(self.order.mode.boleto_especie),  
-            'aceite_titulo': u'%s' %(aceite),  # TODO:
+            # 'valor_titulo': Decimal(v_t),
+            'valor_titulo': Decimal("{0:,.2f}".format(
+                line.move_line_id.debit)),
+            # Decimal('100.00'),
+            'especie_titulo': int(self.order.mode.boleto_especie),
+            'aceite_titulo': u'%s' % (aceite),  # TODO:
             'data_emissao_titulo': self.format_date(
                 line.ml_date_created),
-            #'juros_mora_taxa_dia': Decimal('2.00'),
-            'juros_mora_taxa_dia': Decimal("{0:,.2f}".format(line.move_line_id.debit * 0.00066666667)), # FIXME 
+            # 'juros_mora_taxa_dia': Decimal('2.00'),
+            'juros_mora_taxa_dia': Decimal(
+                "{0:,.2f}".format(line.move_line_id.debit * 0.00066666667)),
+            # FIXME
             'valor_abatimento': Decimal('0.00'),
             'sacado_inscricao_tipo': int(
                 self.sacado_inscricao_tipo(line.partner_id)),
@@ -179,22 +189,23 @@ class Cnab240(Cnab):
         self.order = order
         self.arquivo = Arquivo(self.bank, **self._prepare_header())
         codigo_evento = 1
-        evento = Evento(self.bank, codigo_evento) 
-            
+        evento = Evento(self.bank, codigo_evento)
+
         for line in order.line_ids:
             seg = self._prepare_segmento(line)
             seg_p = banco.registros.SegmentoP(**seg)
             evento.adicionar_segmento(seg_p)
-            
+
             seg_q = banco.registros.SegmentoQ(**seg)
             evento.adicionar_segmento(seg_q)
-        
+
         lote_cobranca = self.arquivo.encontrar_lote(codigo_evento)
-        
+
         if lote_cobranca is None:
-            header = banco.registros.HeaderLoteCobranca(**self.arquivo.header.todict())
+            header = banco.registros.HeaderLoteCobranca(
+                **self.arquivo.header.todict())
             trailer = banco.registros.TrailerLoteCobranca()
-            lote_cobranca = Lote(self.bank, header, trailer) 
+            lote_cobranca = Lote(self.bank, header, trailer)
             self.arquivo.adicionar_lote(lote_cobranca)
 
             if header.controlecob_numero is None:
@@ -203,8 +214,9 @@ class Cnab240(Cnab):
                     lote_cobranca.codigo))
 
             if header.controlecob_data_gravacao is None:
-                header.controlecob_data_gravacao = self.arquivo.header.arquivo_data_de_geracao
-   
+                header.controlecob_data_gravacao = \
+                    self.arquivo.header.arquivo_data_de_geracao
+
         lote_cobranca.adicionar_evento(evento)
         self.arquivo.trailer.totais_quantidade_registros += len(evento)
         remessa = unicode(self.arquivo)

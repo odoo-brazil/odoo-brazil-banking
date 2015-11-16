@@ -30,8 +30,8 @@ except ImportError:
     from StringIO import StringIO
 BoletoException = bank.BoletoException
 
-class Boleto:
 
+class Boleto:
     boleto = object
     account_number = ''
     account_digit = ''
@@ -149,87 +149,23 @@ class Boleto:
         fbuffer.close()
         return boleto_file
 
-class BoletoBB(Boleto):
 
-    def __init__(self, move_line, nosso_numero):        # TODO: size o convenio and nosso numero, replace (7,2)
+class BoletoBB(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        # TODO: size o convenio and nosso numero, replace (7,2)
         # Size of convenio 4, 6, 7 or 8
         #  Nosso Numero format. 1 or 2
         #  Used only for convenio=6
         #  1: Nosso Numero with 5 positions
         #  2: Nosso Numero with 17 positions
-        self.boleto = Boleto.getBoletoClass(move_line)(7,2)
+        self.boleto = Boleto.getBoletoClass(move_line)(7, 2)
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
         self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
+        Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.nosso_numero = self.nosso_numero
 
 
 class BoletoBarisul(Boleto):
-
-    def __init__(self, move_line, nosso_numero):
-        self.boleto = Boleto.getBoletoClass(move_line)()
-        self.account_number = move_line.payment_mode_id.bank_id.acc_number
-        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
-        self.boleto.nosso_numero = self.nosso_numero
-
-
-class BoletoBradesco(Boleto):
-
-    def __init__(self, move_line, nosso_numero):
-        self.boleto = Boleto.getBoletoClass(move_line)()
-        self.account_number = move_line.payment_mode_id.bank_id.acc_number
-        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        #bank specific
-        self.account_digit = move_line.payment_mode_id.bank_id.acc_number_dig
-        self.branch_digit = move_line.payment_mode_id.bank_id.bra_number_dig
-        #end bank specific
-        Boleto.__init__(self, move_line, nosso_numero) 
-        self.boleto.nosso_numero = self.nosso_numero
-
-class BoletoCaixa(Boleto):
-
-    def __init__(self, move_line, nosso_numero):
-        self.boleto = Boleto.getBoletoClass(move_line)()
-        self.account_number = move_line.payment_mode_id.bank_id.acc_number
-        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        #bank specific
-        self.account_digit = move_line.payment_mode_id.bank_id.acc_number_dig
-        #end bank specific
-        Boleto.__init__(self, move_line, nosso_numero) 
-        self.boleto.nosso_numero = self.nosso_numero
-
-class BoletoHsbc(Boleto):
-
-    def __init__(self, move_line, nosso_numero):
-        self.boleto = Boleto.getBoletoClass(move_line)()
-        self.account_number = move_line.payment_mode_id.bank_id.acc_number
-        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
-        self.boleto.nosso_numero = self.nosso_numero
-
-
-class BoletoItau157(Boleto):
-
-    def __init__(self, move_line, nosso_numero):
-        self.boleto = Boleto.getBoletoClass(move_line)()
-        self.account_number = move_line.payment_mode_id.bank_id.acc_number
-        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
-        self.boleto.nosso_numero = self.nosso_numero
-
-
-class BoletoItau(Boleto):
-
-    def __init__(self, move_line, nosso_numero):
-        self.boleto = Boleto.getBoletoClass(move_line)()
-        self.account_number = move_line.payment_mode_id.bank_id.acc_number
-        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
-        self.boleto.nosso_numero = self.nosso_numero
-
-class BoletoReal(Boleto):
-
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -237,67 +173,128 @@ class BoletoReal(Boleto):
         Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.nosso_numero = self.nosso_numero
 
-class BoletoSantander101(Boleto):
 
+class BoletoBradesco(Boleto):
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
         self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
+        # bank specific
+        self.account_digit = move_line.payment_mode_id.bank_id.acc_number_dig
+        self.branch_digit = move_line.payment_mode_id.bank_id.bra_number_dig
+        # end bank specific
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.nosso_numero = self.nosso_numero
+
+
+class BoletoCaixa(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        # bank specific
+        self.account_digit = move_line.payment_mode_id.bank_id.acc_number_dig
+        # end bank specific
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.nosso_numero = self.nosso_numero
+
+
+class BoletoHsbc(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.nosso_numero = self.nosso_numero
+
+
+class BoletoItau157(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.nosso_numero = self.nosso_numero
+
+
+class BoletoItau(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.nosso_numero = self.nosso_numero
+
+
+class BoletoReal(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        Boleto.__init__(self, move_line, nosso_numero)
+        self.boleto.nosso_numero = self.nosso_numero
+
+
+class BoletoSantander101(Boleto):
+    def __init__(self, move_line, nosso_numero):
+        self.boleto = Boleto.getBoletoClass(move_line)()
+        self.account_number = move_line.payment_mode_id.bank_id.acc_number
+        self.branch_number = move_line.payment_mode_id.bank_id.bra_number
+        Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.ios = '0'
         self.boleto.nosso_numero = self.nosso_numero
 
 
 class BoletoStatander101201(Boleto):
-
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
         self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
+        Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.ios = '0'
         self.boleto.nosso_numero = self.nosso_numero
 
 
 class BoletoCaixaSigcb(Boleto):
-
     def __init__(self, move_line, nosso_numero):
         from pyboleto.bank.caixa_sigcb import BoletoCaixaSigcb
         self.boleto = BoletoCaixaSigcb()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
         self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        #bank specific
+        # bank specific
         self.account_digit = move_line.payment_mode_id.bank_id.acc_number_dig
-        #end bank specific
-        Boleto.__init__(self, move_line, nosso_numero) 
+        # end bank specific
+        Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.nosso_numero = self.nosso_numero
 
-class BoletoSicredi(Boleto):
 
+class BoletoSicredi(Boleto):
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
         self.branch_number = move_line.payment_mode_id.bank_id.bra_number
-        Boleto.__init__(self, move_line, nosso_numero) 
+        Boleto.__init__(self, move_line, nosso_numero)
         self.boleto.nosso_numero = self.nosso_numero
 
+
 dict_boleto = {
-    '1' : (BoletoBB, 'Banco do Brasil 18'),
-    '2' : (BoletoBarisul, 'Barisul x'),
-    '3' : (BoletoBradesco, 'Bradesco 06, 03'),
-    '4' : (BoletoCaixa, 'Caixa Economica SR'),
-    '5' : (BoletoHsbc, 'HSBC CNR CSB'),
-    '6' : (BoletoItau157, 'Itau 157'),
-    '7' : (BoletoItau, 'Itau 175, 174, 178, 104, 109'),
-    '8' : (BoletoReal, 'Real 57'),
-    '9' : (BoletoSantander101, 'Santander 102'),
+    '1': (BoletoBB, 'Banco do Brasil 18'),
+    '2': (BoletoBarisul, 'Barisul x'),
+    '3': (BoletoBradesco, 'Bradesco 06, 03'),
+    '4': (BoletoCaixa, 'Caixa Economica SR'),
+    '5': (BoletoHsbc, 'HSBC CNR CSB'),
+    '6': (BoletoItau157, 'Itau 157'),
+    '7': (BoletoItau, 'Itau 175, 174, 178, 104, 109'),
+    '8': (BoletoReal, 'Real 57'),
+    '9': (BoletoSantander101, 'Santander 102'),
     '10': (BoletoStatander101201, 'Santander 101, 201'),
     '11': (BoletoCaixaSigcb, 'Caixa Sigcb'),
     '12': (BoletoSicredi, 'Sicredi'),
 }
 
+
 def getBoletoSelection():
     list = []
     for i in dict_boleto:
-        list.append((i,dict_boleto[i][1]))
+        list.append((i, dict_boleto[i][1]))
     return list
