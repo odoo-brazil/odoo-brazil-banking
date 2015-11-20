@@ -27,7 +27,7 @@
     'complexity': 'normal',
     'depends': [
         'account_statement_commission',
-        'account_statement_transactionid_import'
+        # 'account_statement_transactionid_import'
     ],
     'external_dependencies': {
         'python': ['cnab240'],
