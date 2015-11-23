@@ -16,6 +16,7 @@ addons:
 #    Search your sources alias here:
 #      https://github.com/travis-ci/apt-source-whitelist/blob/master/ubuntu.json
     packages:
+      - poppler-utils  # For pdftohtml
       - expect-dev  # provides unbuffer utility
       - python-lxml  # because pip installation is slow
       - python-simplejson
@@ -68,7 +69,7 @@ virtualenv:
 install:
   - git clone --depth=1 https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
-  - pip install https://github.com/eduardocereto/pyboleto/archive/master.zip
+  - pip install pyboleto
   - pip install https://github.com/odoo-brazil/cnab240/archive/develop.zip
   - travis_install_nightly
 
