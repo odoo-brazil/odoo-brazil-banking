@@ -20,30 +20,3 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# TODO: implement abc factory?
-
-
-class Cnab(object):
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_cnab(bank, cnab_type='240'):
-        if cnab_type == '240':
-            from .cnab_240.cnab_240 import Cnab240
-            return Cnab240.get_bank(bank)
-        elif cnab_type == '400':
-            from .cnab_400.cnab_400 import Cnab400
-            return Cnab400.get_bank(bank)
-        elif cnab_type == '500':
-            from .pag_for.pag_for500 import PagFor500
-            return PagFor500.get_bank(bank)
-            pass
-        else:
-            return False
-
-    def remessa(self, order):
-        return False
-
-    def retorno(self, cnab_file):
-        return object
