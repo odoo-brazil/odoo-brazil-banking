@@ -35,10 +35,18 @@
     'depends': [
         'l10n_br_account_payment_boleto',
         'l10n_br_account_payment_mode',
+<<<<<<< HEAD
         'account_direct_debit',
+=======
+        'l10n_br_account',
+>>>>>>> 2a6e1114a43360c6a71484ec75f341cfe49ebe49
     ],
     'data': [
         'view/l10n_br_payment_cnab.xml',
+        'view/payment_order.xml',
+        'view/l10n_br_cnab_sequence.xml',
+        'data/l10n_br_payment_export_type.xml',
+        # 'data/l10n_br_payment_mode.xml',
     ],
     'active': False,
     "installable": True,
