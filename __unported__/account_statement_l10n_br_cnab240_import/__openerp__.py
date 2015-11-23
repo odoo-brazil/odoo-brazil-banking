@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Author: Luis Felipe Miléo 
+#    Author: Luis Felipe Miléo
 #    Copyright 2014 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -33,9 +33,9 @@
      'python': ['cnab240'],
  },
  'description': """
-    Allows to import CNAB 240 (Centro Nacional de Automação Bancária) statement files, using
-    *account_statement_base_import* generic inheritance mechanism to import
-    statements.
+    Allows to import CNAB 240 (Centro Nacional de Automação Bancária) statement
+     files, using *account_statement_base_import* generic inheritance
+      to import statements.
 
     It requires python cnab240 library to work.
     """,

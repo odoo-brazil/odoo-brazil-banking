@@ -25,15 +25,11 @@
 from ..cnab_240 import Cnab240
 import re
 import string
-from decimal import *
+from decimal import Decimal
 
 
-<<<<<<< HEAD
-class BradescoCnab240(Cnab240):
-=======
 class Bradesco240(Cnab240):
 
->>>>>>> 2a6e1114a43360c6a71484ec75f341cfe49ebe49
     def __init__(self):
         super(Cnab240, self).__init__()
         from cnab240.bancos import bradesco
