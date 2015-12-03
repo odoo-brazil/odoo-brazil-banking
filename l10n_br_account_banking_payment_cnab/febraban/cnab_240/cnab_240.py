@@ -72,6 +72,7 @@ class Cnab240(Cnab):
         :return:
         """
         return {
+            'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'arquivo_data_de_geracao': self.data_hoje(),
             'arquivo_hora_de_geracao': self.hora_agora(),
             # TODO: Número sequencial de arquivo
@@ -148,6 +149,7 @@ class Cnab240(Cnab):
         # Era cedente_agencia_conta_dv agora é cedente_dv_ag_cc
 
         return {
+            'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
@@ -165,8 +167,7 @@ class Cnab240(Cnab):
                 Decimal('1.00'), rounding=ROUND_DOWN),
             # TODO: Código adotado para identificar o título de cobrança.
             # 8 é Nota de cŕedito comercial
-            'especie_titulo': 8,
-            # TODO: 'A' se título foi aceito pelo sacado. 'N' se não foi.
+            'especie_titulo': int(self.order.mode.boleto_especie),
             'aceite_titulo': aceite,
             'data_emissao_titulo': self.format_date(
                 line.ml_date_created),
@@ -188,14 +189,12 @@ class Cnab240(Cnab):
             'sacado_cep_sufixo': int(sulfixo),
             'sacado_cidade': line.partner_id.l10n_br_city_id.name,
             'sacado_uf': line.partner_id.state_id.code,
-            # TODO: campo para identificar o protesto. '1' = Protestar,
-            # '3' = Não protestar, '9' = Cancelar protesto automático
-            'codigo_protesto': 3,
-            'prazo_protesto': 0,
+            'codigo_protesto': int(self.order.mode.boleto_protesto),
+            'prazo_protesto': int(self.order.mode.boleto_protesto_prazo),
             'codigo_baixa': 2,
             'prazo_baixa': 0,  # De 5 a 120 dias.
             'controlecob_data_gravacao': self.data_hoje(),
-            'cobranca_carteira': 1,
+            'cobranca_carteira': int(self.order.mode.boleto_carteira),
         }
 
     def remessa(self, order):
