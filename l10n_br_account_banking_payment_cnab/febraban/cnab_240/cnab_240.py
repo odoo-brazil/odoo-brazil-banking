@@ -159,7 +159,7 @@ class Cnab240(Cnab):
             'cedente_dv_ag_cc': u"5",  # FIXME
             'identificacao_titulo': u'0000000',  # TODO
             'identificacao_titulo_banco': u'0000000',  # TODO
-            'identificacao_titulo_empresa': line.move_line_id.move_id.name,  # Check this
+            'identificacao_titulo_empresa': line.move_line_id.move_id.name,
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
@@ -203,12 +203,19 @@ class Cnab240(Cnab):
         :param order:
         :return:
         """
+        cobrancasimples_valor_titulos = 0
+
         self.order = order
         self.arquivo = Arquivo(self.bank, **self._prepare_header())
         for line in order.line_ids:
             self.arquivo.incluir_cobranca(**self._prepare_segmento(line))
             self.arquivo.lotes[0].header.servico_servico = 1
-            # self.arquivo.
+            # TODO: tratar soma de tipos de cobranca
+            cobrancasimples_valor_titulos += line.amount_currency
+            self.arquivo.lotes[0].trailer.cobrancasimples_valor_titulos = \
+                Decimal(cobrancasimples_valor_titulos).quantize(
+                    Decimal('1.00'), rounding=ROUND_DOWN)
+
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(
             'NFKD', remessa).encode('ascii', 'ignore')
