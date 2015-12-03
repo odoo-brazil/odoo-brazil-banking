@@ -82,13 +82,14 @@ class Cnab240(Cnab):
             'cedente_agencia': int(
                 self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
-            'cedente_agencia_conta_dv':
+            'cedente_agencia_dv':
             self.order.mode.bank_id.bra_number_dig,
             'cedente_nome': self.order.company_id.legal_name,
-            'cedente_codigo_agencia_digito':
-            self.order.mode.bank_id.bra_number_dig,
+            # DV ag e conta
+            'cedente_dv_ag_cc': u"5",  # FIXME
             'arquivo_codigo': 1,  # Remessa/Retorno
             'servico_operacao': u'R',
+            'nome_banco': unicode(self.order.mode.bank_id.bank_name),
         }
 
     def get_file_numeration(self):
@@ -127,17 +128,36 @@ class Cnab240(Cnab):
         """
         prefixo, sulfixo = self.cep(line.partner_id.zip)
 
-        aceite = 'N'
+        aceite = u'N'
         if not self.order.mode.boleto_aceite == 'S':
-            aceite = 'A'
+            aceite = u'A'
+
+        # Código agencia do cedente
+        # cedente_agencia = cedente_agencia
+
+        # Dígito verificador da agência do cedente
+        # cedente_agencia_conta_dv = cedente_agencia_dv
+
+        # Código da conta corrente do cedente
+        # cedente_conta = cedente_conta
+
+        # Dígito verificador da conta corrente do cedente
+        # cedente_conta_dv = cedente_conta_dv
+
+        # Dígito verificador de agencia e conta
+        # Era cedente_agencia_conta_dv agora é cedente_dv_ag_cc
 
         return {
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
-            'cedente_agencia_conta_dv':
+            'cedente_agencia_dv':
             self.order.mode.bank_id.bra_number_dig,
+            # DV ag e cc
+            'cedente_dv_ag_cc': u"5",  # FIXME
             'identificacao_titulo': u'0000000',  # TODO
+            'identificacao_titulo_banco': u'0000000',  # TODO
+            'identificacao_titulo_empresa': line.move_line_id.move_id.name,  # Check this
             'numero_documento': line.name,
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
@@ -175,6 +195,7 @@ class Cnab240(Cnab):
             'codigo_baixa': 2,
             'prazo_baixa': 0,  # De 5 a 120 dias.
             'controlecob_data_gravacao': self.data_hoje(),
+            'cobranca_carteira': 1,
         }
 
     def remessa(self, order):
