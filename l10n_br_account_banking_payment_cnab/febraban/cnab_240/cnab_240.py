@@ -165,7 +165,7 @@ class Cnab240(Cnab):
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
             'valor_titulo': Decimal(str(line.amount_currency)).quantize(
-                Decimal('1.00'), rounding=ROUND_DOWN),
+                Decimal('1.00')),
             # TODO: Código adotado para identificar o título de cobrança.
             # 8 é Nota de cŕedito comercial
             'especie_titulo': int(self.order.mode.boleto_especie),
@@ -215,7 +215,7 @@ class Cnab240(Cnab):
             cobrancasimples_valor_titulos += line.amount_currency
             self.arquivo.lotes[0].trailer.cobrancasimples_valor_titulos = \
                 Decimal(cobrancasimples_valor_titulos).quantize(
-                    Decimal('1.00'), rounding=ROUND_DOWN)
+                    Decimal('1.00'))
 
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(
