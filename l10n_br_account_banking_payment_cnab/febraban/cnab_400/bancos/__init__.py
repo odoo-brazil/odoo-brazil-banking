@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
-# #############################################################################
+# coding: utf-8
+# ###########################################################################
 #
-#
-#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
-#    @author Fernando Marcato Rodrigues
+#    Author: Fernando Marcato Rodrigues
+#    Copyright 2015 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,17 +18,3 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from openerp import models, fields
-
-
-class ResPartnerBank(models.Model):
-    """ Adiciona campos necessários para o cadastramentos de contas
-    bancárias no Brasil."""
-    _inherit = 'res.partner.bank'
-
-    bra_acc_dig = fields.Char(u'Digito Verificador Agência/Conta', size=1)
-    codigo_da_empresa = fields.Integer(
-        u'Código da empresa', size=20,
-        help=u"Será informado pelo banco depois do cadastro do beneficiário "
-             u"na agência")
