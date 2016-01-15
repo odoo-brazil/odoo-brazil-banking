@@ -62,7 +62,7 @@ class PagFor500(Cnab):
         :return:
         """
         return {
-            'arquivo_data_de_geracao': self.data_hoje(),
+            'arquivo_data_de_geracao': self.data_hoje_pag_for(),
             'arquivo_hora_de_geracao': self.hora_agora(),
             # TODO: Número sequencial de arquivo
             'numero_remessa': int(self.get_file_numeration()),
@@ -71,7 +71,7 @@ class PagFor500(Cnab):
                 self.order.company_id.cnpj_cpf)[0:8]),
             'cnpj_cpf_filial': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)[9:12]),
-            'controle_cnpj': int(punctuation_rm(
+            'sufixo_cnpj': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)[12:14]),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
@@ -234,6 +234,9 @@ class PagFor500(Cnab):
 
     def data_hoje(self):
         return (int(time.strftime("%d%m%Y")))
+
+    def data_hoje_pag_for(self):
+        return (int(time.strftime("%Y%m%d")))
 
     def hora_agora(self):
         return (int(time.strftime("%H%M%S")))
