@@ -176,7 +176,7 @@ class PagFor500(Cnab):
         :return:
         """
         return {
-            'arquivo_data_de_geracao': self.data_hoje(),
+            'arquivo_data_de_geracao': self.data_hoje_pag_for(),
             'arquivo_hora_de_geracao': self.hora_agora(),
             # TODO: Número sequencial de arquivo
             'numero_remessa': int(self.get_file_numeration()),
@@ -185,7 +185,7 @@ class PagFor500(Cnab):
                 self.order.company_id.cnpj_cpf)[0:8]),
             'cnpj_cpf_filial': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)[9:12]),
-            'controle_cnpj': int(punctuation_rm(
+            'sufixo_cnpj': int(punctuation_rm(
                 self.order.company_id.cnpj_cpf)[12:14]),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
@@ -213,6 +213,10 @@ class PagFor500(Cnab):
     def format_date(self, srt_date):
         return int(datetime.datetime.strptime(
             srt_date, '%Y-%m-%d').strftime('%d%m%Y'))
+
+    def format_date_ano_mes_dia(self, srt_date):
+        return int(datetime.datetime.strptime(
+            srt_date, '%Y-%m-%d').strftime('%Y%m%d'))
 
     def nosso_numero(self, format):
         pass
@@ -246,6 +250,7 @@ class PagFor500(Cnab):
             aceite = u'A'
 
         return {
+            'conta_complementar': int(self.order.mode.bank_id.acc_number),
             'especie_titulo': 8,
             # TODO: Código adotado para identificar o título de cobrança. 8
             # é Nota de cŕedito comercial
@@ -256,7 +261,7 @@ class PagFor500(Cnab):
                 self.rmchar(line.partner_id.cnpj_cpf)[0:8]),
             'cnpj_cpf_filial_forn': int(
                 self.rmchar(line.partner_id.cnpj_cpf)[9:12]),
-            'controle_cnpj_cpf_forn': int(
+            'cnpj_cpf_forn_sufixo': int(
                 self.rmchar(line.partner_id.cnpj_cpf)[12:14]),
             'nome_forn': line.partner_id.legal_name,
             'endereco_forn': (
@@ -276,9 +281,9 @@ class PagFor500(Cnab):
             'carteira': int(self.order.mode.boleto_carteira),
             'nosso_numero': 11,
             'numero_documento': line.name,
-            'vencimento_titulo': self.format_date(
+            'vencimento_titulo': self.format_date_ano_mes_dia(
                 line.ml_maturity_date),
-            'data_emissao_titulo': self.format_date(
+            'data_emissao_titulo': self.format_date_ano_mes_dia(
                 line.ml_date_created),
             'desconto1_data': 0,
             'fator_vencimento': 0,  # FIXME
@@ -348,6 +353,9 @@ class PagFor500(Cnab):
 
     def data_hoje(self):
         return (int(time.strftime("%d%m%Y")))
+
+    def data_hoje_pag_for(self):
+        return (int(time.strftime("%Y%m%d")))
 
     def hora_agora(self):
         return (int(time.strftime("%H%M%S")))
