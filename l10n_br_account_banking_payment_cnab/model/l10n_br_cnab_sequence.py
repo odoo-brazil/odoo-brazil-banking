@@ -23,22 +23,16 @@
 from openerp import models, fields
 
 
-class ResPartnerBank(models.Model):
-    """ Adiciona campos necessários para o cadastramentos de contas
-    bancárias no Brasil."""
-    _inherit = 'res.partner.bank'
+class L10nBrCnabSequence(models.Model):
+    _name = 'l10n_br_cnab.sequence'
 
-    bra_acc_dig = fields.Char(u'Digito Verificador Agência/Conta', size=1)
-    codigo_da_empresa = fields.Integer(
-        u'Código da empresa', size=20,
-        help=u"Será informado pelo banco depois do cadastro do beneficiário "
-             u"na agência")
-    tipo_de_conta = fields.Selection(
-        [('01', u'Conta corrente individual'),
-         ('02', u'Conta poupança individual'),
-         ('03', u'Conta depósito judicial/Depósito em consignação individual'),
-         ('11', u'Conta corrente conjunta'),
-         ('12', u'Conta poupança conjunta'),
-         ('13', u'Conta depósito judicial/Depósito em consignação conjunta'),],
-            u'Tipo de Conta', default='01'
-    )
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nome')
+    internal_sequence_id = fields.Many2one(
+        'ir.sequence', u'Sequência Interna')
+    parent_payment_mode = fields.Many2one(
+        'payment.mode', "Conta de exportação", select=True)
+
+    # 'parent_id': fields.many2one('res.partner.category', 'Parent Category', select=True, ondelete='cascade')
+    # 400: um modo de cobrança = 1 conta bancária = 1 sequencia de arquivo
+    # 500: n modos de pagamento (ted, doc) = 1 conta bancária = 1 sequencia de arquivo

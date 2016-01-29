@@ -31,6 +31,7 @@ class BradescoPagFor(PagFor500):
         super(PagFor500, self).__init__()
         from cnab240.bancos import bradescoPagFor
         self.bank = bradescoPagFor
+        self.controle_linha = 2
 
     def _prepare_header(self):
         """
@@ -39,19 +40,21 @@ class BradescoPagFor(PagFor500):
         :return:
         """
         vals = super(BradescoPagFor, self)._prepare_header()
+        vals['codigo_comunicacao'] = int(self.order.mode.boleto_convenio)
         return vals
 
-    def _prepare_segmento(self, line):
+    def _prepare_segmento(self, line, vals):
         """
 
         :param line:
         :return:
         """
-        vals = super(BradescoPagFor, self)._prepare_segmento(line)
+        vals = super(BradescoPagFor, self)._prepare_segmento(line, vals)
 
         # TODO campo para informar a data do pagamento.
         vals['data_para_efetivacao_pag'] = self.muda_campos_data(
             vals['vencimento_titulo'])
+        self.controle_linha += 1
 
         return vals
 

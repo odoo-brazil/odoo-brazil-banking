@@ -21,34 +21,18 @@
 ##############################################################################
 
 from openerp import models, fields
-
+from openerp.addons import decimal_precision as dp
 
 class PaymentMode(models.Model):
     _inherit = "payment.mode"
 
-    payment_order_type = fields.Selection(
-        selection_add=[
-            ('cobranca', u'Cobrança'),
-        ])
-
+    condicao_emissao_papeleta = fields.Selection(
+        [('1', 'Banco emite e Processa'),
+         ('2', 'Cliente emite e banco processa'),],
+            u'Condição Emissão de Papeleta', default='1')
+    cnab_percent_interest = fields.Float(string=u"Percentual de Juros",
+                                         digits=dp.get_precision('Account'))
+    comunicacao_2 = fields.Char("Comunicação para o sacador avalista")
     # A exportação CNAB não se encaixa somente nos parâmetros de
     # débito e crédito.
 
-
-class PaymentModeType(models.Model):
-    _inherit = 'payment.mode.type'
-    _description = 'Payment Mode Type'
-
-    payment_order_type = fields.Selection(
-        selection_add=[
-            ('cobranca', u'Cobrança'),
-        ])
-
-
-class PaymentOrder(models.Model):
-    _inherit = 'payment.order'
-
-    payment_order_type = fields.Selection(
-        selection_add=[
-            ('cobranca', u'Cobrança'),
-        ])

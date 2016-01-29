@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-##############################################################################
+# #############################################################################
 #
-#    Odoo Brazil Account Payment Partner module for Odoo
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Miléo <mileo@kmee.com.br>
+#
+#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
+#    @author Fernando Marcato Rodrigues
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -23,9 +23,20 @@
 from openerp import models, fields
 
 
-class AccountMoveLine(models.Model):
-    _inherit = 'account.move.line'
+# ESTADOS_CNAB = [
+#     ('draft', u'Inicial'),
+#     ('added', u'Adicionada à ordem de pagamento'),
+#     ('exported', u'Exportada'),
+#     ('accepted', u'Aceita'),
+#     ('not_accepted', u'Não aceita pelo banco'), # importar novamente
+# ]
 
-    payment_mode_id = fields.Many2one('payment.mode',
-                                      related='invoice.payment_mode_id',
-                                      string='Payment Mode')
+
+class AccounMoveLine(models.Model):
+    _inherit = "account.move.line"
+    #
+    # state_cnab = fields.Selection(
+    #     ESTADOS_CNAB, u'Estados CNAB', default='draft')
+
+    is_cnab_rejected = fields.Boolean(u'CNAB Rejeitado', default=False)
+    cnab_rejected_code = fields.Char(u'Rejeição')

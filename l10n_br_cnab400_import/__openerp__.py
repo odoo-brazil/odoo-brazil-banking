@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-##############################################################################
+# ###########################################################################
 #
-#    Account Payment Boleto module for Odoo
-#    Copyright (C) 2012-2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Miléo <mileo@kmee.com.br>
+#    Author: Fernando Marcato Rodrigues
+#    Copyright 2015 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -22,28 +21,29 @@
 
 
 {
-    'name': 'Odoo Brasil Account Payment Boleto',
+    'name': 'Import CNAB 400 Bank Statement',
     'version': '0.1',
     'category': 'Banking addons',
     'license': 'AGPL-3',
-    'summary': 'Adds payment mode boleto on move lines',
-    'description': """ """,
     'author': 'KMEE',
     'website': 'http://www.kmee.com.br',
+    'external_dependencies': {
+        'python': ['cnab240'],
+    },
     'depends': [
-        'l10n_br_account_payment_mode',
-        'account_due_list',
-        'base_transaction_id',
+        'account_bank_statement_import',
+        'l10n_br_account',
     ],
     'data': [
-        'data/boleto_data.xml',
-        'views/res_company.xml',
-        'views/payment_mode.xml',
-        'views/account_move_line.xml',
-        'reports/report_print_button_view.xml',
-    ],
-    'demo': [
-        'demo/payment_demo.xml',
+        'view/cnab_import_view.xml',
     ],
     'active': False,
+    "installable": True,
+    "auto_install": False,
+    'description': """
+    Allows to import CNAB 400 (Centro Nacional de Automação Bancária)
+    statement files.
+
+    It requires python PyCNAB library to work.
+    """,
 }

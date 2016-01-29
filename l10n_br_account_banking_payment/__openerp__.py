@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Account Payment Boleto module for Odoo
-#    Copyright (C) 2012-2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Miléo <mileo@kmee.com.br>
+#    Copyright (C) 2016 - KMEE INFORMATICA LTDA (<http://kmee.com.br>).
+#              Luis Felipe Miléo - mileo@kmee.com.br
+#
+#    All other contributions are (C) by their respective contributors
+#
+#    All Rights Reserved
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,30 +23,28 @@
 #
 ##############################################################################
 
-
 {
-    'name': 'Odoo Brasil Account Payment Boleto',
-    'version': '0.1',
-    'category': 'Banking addons',
+    'name': 'Brazilian Account Banking - Debit and Payments Export Infrastructure',
+    'version': '8.0.0.0.0',
     'license': 'AGPL-3',
-    'summary': 'Adds payment mode boleto on move lines',
-    'description': """ """,
-    'author': 'KMEE',
-    'website': 'http://www.kmee.com.br',
+    'author': "KMEE, "
+              "Odoo Community Association (OCA)",
+    'website': 'https://github.com/odoo-brazil/odoo-brazil-banking',
+    'category': 'Banking addons',
     'depends': [
-        'l10n_br_account_payment_mode',
-        'account_due_list',
-        'base_transaction_id',
-    ],
+        'l10n_br_account',
+        'l10n_br_account',
+        'account_banking_payment_export',
+        ],
     'data': [
-        'data/boleto_data.xml',
-        'views/res_company.xml',
+        'views/account_due_list.xml',
+        'views/account_payment.xml',
         'views/payment_mode.xml',
-        'views/account_move_line.xml',
-        'reports/report_print_button_view.xml',
+        'views/payment_mode_type.xml',
+        'wizard/payment_order_create_view.xml',
+        'data/payment_mode_type.xml',
     ],
     'demo': [
-        'demo/payment_demo.xml',
-    ],
-    'active': False,
+        ],
+    'installable': True,
 }

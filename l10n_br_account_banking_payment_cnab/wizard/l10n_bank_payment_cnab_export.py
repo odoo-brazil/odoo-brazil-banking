@@ -23,13 +23,17 @@
 
 from openerp import models, api, workflow, fields
 import base64
+import time
 from ..febraban.cnab import Cnab
+
+# TODO Server action para a cada dia retornar o sufixo do arquivo para zero
 
 
 class L10nPaymentCnab(models.TransientModel):
     _name = 'payment.cnab'
     _description = 'Export payment order(s) in cnab layout'
 
+    name = fields.Char(u'Nome', size=255)
     cnab_file = fields.Binary('CNAB File', readonly=True)
     state = fields.Selection(
         [('init', 'init'),
@@ -46,6 +50,17 @@ class L10nPaymentCnab(models.TransientModel):
             cnab = Cnab.get_cnab(order.mode.bank_id.bank_bic,
                                  order.mode_type.code)()
             remessa = cnab.remessa(order)
+            suf_arquivo = order.get_next_sufixo()
+
+            if order.mode.type.code == '240':
+                self.name = 'CB%s%s.REM' % (
+                    time.strftime('%d%m'), str(order.file_number))
+            elif order.mode.type.code == '400':
+                self.name = 'CB%s%s.REM' % (
+                    time.strftime('%d%m'), str(suf_arquivo))
+            elif order.mode.type.code == '500':
+                self.name = 'PG%s%s.REM' % (
+                    time.strftime('%d%m'), str(order.file_number))
             self.state = 'done'
             self.cnab_file = base64.b64encode(remessa)
             workflow.trg_validate(self.env.uid, 'payment.order', order_id,

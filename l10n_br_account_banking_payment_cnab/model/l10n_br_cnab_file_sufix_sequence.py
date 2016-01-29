@@ -23,10 +23,12 @@
 from openerp import models, fields
 
 
-class L10n_br_CnabSequence(models.Model):
-    _name = 'l10n_br_cnab_sequence'
+class L10nBrCnabFileSufixSequence(models.Model):
+    _name = 'l10n_br_cnab_file_sufix.sequence'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nome')
     internal_sequence_id = fields.Many2one(
         'ir.sequence', u'Sequência Interna')
+    parent_payment_mode_suf = fields.Many2one(
+        'payment.mode', "Conta de exportação", select=True)
