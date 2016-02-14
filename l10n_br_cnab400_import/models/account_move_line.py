@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# ###########################################################################
+# #############################################################################
 #
-#    Author: Fernando Marcato Rodrigues
-#    Copyright 2015 KMEE - www.kmee.com.br
+#
+#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
+#    @author Fernando Marcato Rodrigues
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,5 +20,17 @@
 #
 ##############################################################################
 
-from . import account_bank_statement_import
-from . import models
+from openerp import models, fields
+
+
+class AccounMoveLine(models.Model):
+    _inherit = "account.move.line"
+
+    ml_identificacao_titulo_no_banco = fields.Char(
+        u'Identificação do título no banco')
+    str_ocorrencia = fields.Char(u'Identificação de Ocorrência')
+    str_motiv_a = fields.Char(u'Motivo da ocorrência 01')
+    str_motiv_b = fields.Char(u'Motivo de ocorrência 02')
+    str_motiv_c = fields.Char(u'Motivo de ocorrência 03')
+    str_motiv_d = fields.Char(u'Motivo de ocorrência 04')
+    str_motiv_e = fields.Char(u'Motivo de ocorrência 05')
