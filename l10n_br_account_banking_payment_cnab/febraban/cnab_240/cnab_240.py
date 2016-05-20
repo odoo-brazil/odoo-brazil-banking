@@ -72,6 +72,7 @@ class Cnab240(Cnab):
         :return:
         """
         return {
+            'cedente_agencia_conta_dv' : int(self.order.mode.bank_id.bra_number_dig),
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'arquivo_data_de_geracao': self.data_hoje(),
             'arquivo_hora_de_geracao': self.hora_agora(),
@@ -149,6 +150,7 @@ class Cnab240(Cnab):
         # Era cedente_agencia_conta_dv agora é cedente_dv_ag_cc
 
         return {
+            'cedente_agencia_conta_dv' : int(self.order.mode.bank_id.bra_number_dig),
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),

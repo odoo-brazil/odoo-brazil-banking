@@ -21,6 +21,7 @@
 ##############################################################################
 
 from openerp import models, fields, api
+from openerp.exceptions import Warning
 
 # TODO: funcao a ser chamada por ação automatizada para resetar o sufixo
 #     diariamente
@@ -37,7 +38,23 @@ class PaymentOrder(models.Model):
     sufixo_arquivo = fields.Integer(u'Sufixo do arquivo')
     serie_sufixo_arquivo = fields.Many2one(
         'l10n_br_cnab_file_sufix.sequence', u'Série do Sufixo do arquivo')
-
+    
+    # we will validate here user inputs required to export
+    # a wrong input shouldn't raise error but should show helpful
+    # warning message
+    @api.multi
+    def validate_order(self):
+        # code must belong to one of allowed code
+        if self.mode_type.code not in ['240', '400', '500']:
+            raise Warning("Payment Type Code must be 240, 400 or 500, found %s" % self.mode_type.code)
+        # legal name max length is accepted 30 chars
+        if len(self.company_id.legal_name) > 30:
+            raise Warning("Company name should not be longer than 30 chars")
+        # move lines must have transaction refernce
+        for line in self.line_ids:
+            if not line.move_line_id.transaction_ref:
+                raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
+    
     def get_next_number(self, cr, uid, ids, context=None):
         if context is None:
             context = {}

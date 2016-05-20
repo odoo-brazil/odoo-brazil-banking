@@ -50,7 +50,7 @@ class Itau240(Cnab240):
         vals['cedente_dv_ag_cc'] = int(
             vals['cedente_dv_ag_cc'])
         vals['cedente_agencia_dv'] = int(
-            vals['cedente_agencia_dv']),
+            vals['cedente_agencia_dv'])
         return vals
 
     def _prepare_segmento(self, line):
@@ -63,7 +63,6 @@ class Itau240(Cnab240):
 
         carteira, nosso_numero, digito = self.nosso_numero(
             line.move_line_id.transaction_ref)
-
         vals['cedente_dv_ag_cc'] = int(
             vals['cedente_dv_ag_cc'])
         vals['carteira_numero'] = int(carteira)

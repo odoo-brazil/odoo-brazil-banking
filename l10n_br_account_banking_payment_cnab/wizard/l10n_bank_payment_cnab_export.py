@@ -47,6 +47,7 @@ class L10nPaymentCnab(models.TransientModel):
         for order_id in self.env.context.get('active_ids', []):
 
             order = self.env['payment.order'].browse(order_id)
+            order.validate_order()
             cnab = Cnab.get_cnab(order.mode.bank_id.bank_bic,
                                  order.mode_type.code)()
             remessa = cnab.remessa(order)
