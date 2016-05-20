@@ -58,6 +58,8 @@ class report_custom(report_int):
             for account_invoice in ai_obj.browse(cr, uid, active_ids):
                 for move_line in account_invoice.move_line_receivable_id:
                     ids_move_lines.append(move_line.id)
+            if not len(ids_move_lines):
+                raise Warning("No receivable or payable move lines found. Please set Gera Financeiro to True in Journal")
         elif active_model == 'account.move.line':
             ids_move_lines = active_ids
         else:
