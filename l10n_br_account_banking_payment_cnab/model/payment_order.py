@@ -49,7 +49,7 @@ class PaymentOrder(models.Model):
             raise Warning("Payment Type Code must be 240, 400 or 500, found %s" % self.mode_type.code)
         # legal name max length is accepted 30 chars
         if len(self.company_id.legal_name) > 30:
-            raise Warning("Company name should not be longer than 30 chars")
+            raise Warning("Rezão Social should not be longer than 30 chars")
         # move lines must have transaction refernce
         for line in self.line_ids:
             if not line.move_line_id.transaction_ref:
