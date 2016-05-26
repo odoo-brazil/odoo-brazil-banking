@@ -50,6 +50,11 @@ class PaymentOrder(models.Model):
         # legal name max length is accepted 30 chars
         if len(self.company_id.legal_name) > 30:
             raise Warning("Company's Rezão Social should not be longer than 30 chars")
+        if not self.mode.boleto_protesto:
+            raise Warning(u"Códigos de Protesto in payment mode not defined")
+        if not self.mode.boleto_protesto_prazo:
+            raise Warning(u"Prazo protesto in payment mode not defined")
+            
         # move lines must have transaction refernce
         for line in self.line_ids:
             if not line.partner_id:
@@ -60,6 +65,12 @@ class PaymentOrder(models.Model):
                 raise Warning("Partner's Rezão Social should not be longer than 30 chars")
             if not line.partner_id.state_id:
                 raise Warning("Partner's state not defined")
+            if not line.partner_id.state_id.code:
+                raise Warning("Partner's state code not defined")
+            if not line.partner_id.district:
+                raise Warning("Partner's bairro not defined")
+            if not line.partner_id.zip:
+                raise Warning("Partner's zip not defined")
             if not line.partner_id.l10n_br_city_id:
                 raise Warning("Partner's city not defined")
             if not line.partner_id.street:
@@ -68,6 +79,8 @@ class PaymentOrder(models.Model):
                 raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
             if not line.move_line_id.invoice.number:
                 raise Warning("Null value in 'numero_documento' number not defined for invoice %s" % line.move_line_id.invoice.number)
+            if len(line.move_line_id.invoice.number) > 10:
+                raise Warning("numero_documento can not be more than 10 digits long")
         
     
     def get_next_number(self, cr, uid, ids, context=None):
