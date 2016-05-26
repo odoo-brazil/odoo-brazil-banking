@@ -158,10 +158,10 @@ class Cnab240(Cnab):
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
             # DV ag e cc
             'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
-            'identificacao_titulo': u'0000000',  # TODO
+            'identificacao_titulo': line.move_line_id.name,  # 25 chars limit 
             'identificacao_titulo_banco': u'0000000',  # TODO
-            'identificacao_titulo_empresa': line.move_line_id.move_id.name,
-            'numero_documento': line.name,
+            'identificacao_titulo_empresa': line.move_line_id.move_id.name, 
+            'numero_documento': line.move_line_id.invoice.number, # 10 chars limit 
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
             'valor_titulo': Decimal(str(line.amount_currency)).quantize(
