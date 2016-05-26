@@ -80,7 +80,7 @@ class PaymentOrder(models.Model):
             if not line.move_line_id.invoice.number:
                 raise Warning("Null value in 'numero_documento' number not defined for invoice %s" % line.move_line_id.invoice.number)
             if len(line.move_line_id.invoice.number) > 10:
-                raise Warning("numero_documento can not be more than 10 digits long")
+                raise Warning("numero_documento can not be more than 10 digits long found %s" %line.move_line_id.invoice.number)
         
     
     def get_next_number(self, cr, uid, ids, context=None):
