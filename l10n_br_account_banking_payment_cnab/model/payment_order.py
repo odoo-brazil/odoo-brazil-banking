@@ -44,6 +44,8 @@ class PaymentOrder(models.Model):
     # warning message
     @api.multi
     def validate_order(self):
+        if not len(self.line_ids):
+            raise Warning("Please select lines to export")
         # code must belong to one of allowed code
         if self.mode_type.code not in ['240', '400', '500']:
             raise Warning("Payment Type Code must be 240, 400 or 500, found %s" % self.mode_type.code)
@@ -77,6 +79,12 @@ class PaymentOrder(models.Model):
                 raise Warning("Partner's street not defined")
             if not line.move_line_id.transaction_ref:
                 raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
+            if len(line.move_line_id.transaction_ref) > 8:
+                raise Warning("Transaction reference for move line can not be longer than 8 digits found %s" %line.move_line_id.transaction_ref)
+            try:
+                int(line.move_line_id.transaction_ref)
+            except:
+                raise Warning("Transaction reference for move line must be integer")
             if not line.move_line_id.invoice.number:
                 raise Warning("Null value in 'numero_documento' number not defined for invoice %s" % line.move_line_id.invoice.number)
             if len(line.move_line_id.invoice.number) > 10:
