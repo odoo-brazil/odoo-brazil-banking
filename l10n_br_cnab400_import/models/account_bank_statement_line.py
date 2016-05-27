@@ -23,12 +23,14 @@
 from openerp import models, fields
 
 
-class L10nBrCnabFileSufixSequence(models.Model):
-    _name = 'l10n_br_cnab_file_sufix.sequence'
+class AccountBankStatementLine(models.Model):
+    """Extend model account.bank.statement.line."""
+    _inherit = "account.bank.statement.line"
 
-    code = fields.Char(u'Código')
-    name = fields.Char(u'Nome')
-    internal_sequence_id = fields.Many2one(
-        'ir.sequence', u'Sequência Interna')
-    parent_payment_mode_suf = fields.Many2one(
-        'payment.mode', "Conta de exportação", select=True)
+    # CNAB transactions can be imported more than once.
+    _sql_constraints = [
+        ('unique_import_id',
+         'CHECK(1=1)',
+         'A bank account transactions can be imported only once !')
+    ]
+

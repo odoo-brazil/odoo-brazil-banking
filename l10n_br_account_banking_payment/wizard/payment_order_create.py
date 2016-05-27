@@ -30,6 +30,7 @@ class PaymentOrderCreate(models.TransientModel):
     _inherit = 'payment.order.create'
 
     schedule_date = fields.Date('Data Programada')
+    all_posted_moves = fields.Boolean(u'Títulos em aberto', default=True)
 
     @api.model
     def default_get(self, field_list):
@@ -43,6 +44,12 @@ class PaymentOrderCreate(models.TransientModel):
     @api.multi
     def extend_payment_order_domain(self, payment_order, domain):
         self.ensure_one()
+
+        # Search for all posted moves
+        if self.all_posted_moves == True:
+            index = domain.index(('date_maturity', '<=', self.duedate))
+            domain[index + 1] = ('date_maturity', '>', self.duedate)
+
         if payment_order.payment_order_type == 'payment':
             # For payables, propose all unreconciled credit lines,
             # including partially reconciled ones.
@@ -81,7 +88,7 @@ class PaymentOrderCreate(models.TransientModel):
         """
         self.ensure_one()
         payment_lines = self.env['payment.line'].\
-            search([('order_id.state', 'in', ('draft', 'open')),
+            search([('order_id.state', 'in', ('draft', 'open', 'done')),
                     ('move_line_id', 'in', lines.ids)])
         to_exclude = set([l.move_line_id.id for l in payment_lines])
         return [l.id for l in lines if l.id not in to_exclude]
@@ -130,61 +137,23 @@ class PaymentOrderCreate(models.TransientModel):
 
     @api.multi
     def _prepare_payment_line(self, payment, line):
-        """This function is designed to be inherited
-        The resulting dict is passed to the create method of payment.line"""
-        self.ensure_one()
-        _today = fields.Date.context_today(self)
-        date_to_pay = False  # no payment date => immediate payment
-        if payment.date_prefered == 'due':
-            # -- account_banking
-            # date_to_pay = line.date_maturity
-            date_to_pay = (
-                line.date_maturity
-                if line.date_maturity and line.date_maturity > _today
-                else False)
-            # -- end account banking
-        elif payment.date_prefered == 'fixed':
-            # -- account_banking
-            # date_to_pay = payment.date_scheduled
-            date_to_pay = (
-                payment.date_scheduled
-                if payment.date_scheduled and payment.date_scheduled > _today
-                else False)
-            # -- end account banking
-        # -- account_banking
-        state = 'normal'
-        communication = line.ref or '-'
+        res = super(PaymentOrderCreate, self)._prepare_payment_line(payment, line)
         if line.invoice:
             if line.invoice.type in ('in_invoice', 'in_refund'):
                 if line.invoice.reference_type == 'structured':
                     state = 'structured'
-                    communication = line.invoice.reference
+                    res['communication'] = line.invoice.reference
                 else:
                     if line.invoice.reference:
-                        communication = line.invoice.reference
+                        res['communication'] = line.invoice.reference
                     elif line.invoice.supplier_invoice_number:
-                        communication = line.invoice.supplier_invoice_number
+                        res['communication'] = line.invoice.supplier_invoice_number
             else:
                 # Make sure that the communication includes the
                 # customer invoice number (in the case of debit order)
-                communication = line.invoice.number.replace('/', '')
+                res['communication'] = line.name
                 state = 'structured'
-        amount_currency = line.amount_residual_currency
-        line2bank = line.line2bank(payment.mode.id)
-        # -- end account banking
-        res = {'move_line_id': line.id,
-               'amount_currency': amount_currency,
-               'bank_id': line2bank.get(line.id),
-               'order_id': payment.id,
-               'partner_id': line.partner_id and line.partner_id.id or False,
-               # account banking
-               'communication': communication,
-               'state': state,
-               # end account banking
-               'date': date_to_pay,
-               'currency': (line.invoice and line.invoice.currency_id.id or
-                            line.journal_id.currency.id or
-                            line.journal_id.company_id.currency_id.id)}
+
         return res
 
     @api.multi

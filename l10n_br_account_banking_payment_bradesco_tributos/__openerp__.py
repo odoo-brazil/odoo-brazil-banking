@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# #############################################################################
+# ###########################################################################
 #
-#
-#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
-#    @author Fernando Marcato Rodrigues
+#    Author: Luis Felipe Mileo
+#    Author: Luiz Felipe do Divino
+#    Copyright 2015 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,15 +20,27 @@
 #
 ##############################################################################
 
-from openerp import models, fields
 
-
-class L10nBrCnabFileSufixSequence(models.Model):
-    _name = 'l10n_br_cnab_file_sufix.sequence'
-
-    code = fields.Char(u'Código')
-    name = fields.Char(u'Nome')
-    internal_sequence_id = fields.Many2one(
-        'ir.sequence', u'Sequência Interna')
-    parent_payment_mode_suf = fields.Many2one(
-        'payment.mode', "Conta de exportação", select=True)
+{
+    'name': 'Account Payment Tributos Bradesco',
+    'version': '0.1',
+    'category': 'Banking addons',
+    'license': 'AGPL-3',
+    'author': 'KMEE',
+    'website': 'http://www.kmee.com.br',
+    'external_dependencies': {
+        'python': ['fixedwidth'],
+    },
+    'depends': [
+        'l10n_br_account_payment_mode',
+        'l10n_br_account_banking_payment',
+    ],
+    'data': [
+        'view/l10n_br_payment_tax.xml',
+        'view/l10n_br_cobranca_tax.xml',
+        'view/payment_mode.xml',
+        'view/guia_recolhimento.xml',
+    ],
+    "installable": True,
+    "auto_install": False,
+}

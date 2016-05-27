@@ -23,12 +23,14 @@
 from openerp import models, fields
 
 
-class L10nBrCnabFileSufixSequence(models.Model):
-    _name = 'l10n_br_cnab_file_sufix.sequence'
+class AccounMoveLine(models.Model):
+    _inherit = "account.move.line"
 
-    code = fields.Char(u'Código')
-    name = fields.Char(u'Nome')
-    internal_sequence_id = fields.Many2one(
-        'ir.sequence', u'Sequência Interna')
-    parent_payment_mode_suf = fields.Many2one(
-        'payment.mode', "Conta de exportação", select=True)
+    ml_identificacao_titulo_no_banco = fields.Char(
+        u'Identificação do título no banco')
+    str_ocorrencia = fields.Char(u'Identificação de Ocorrência')
+    str_motiv_a = fields.Char(u'Motivo da ocorrência 01')
+    str_motiv_b = fields.Char(u'Motivo de ocorrência 02')
+    str_motiv_c = fields.Char(u'Motivo de ocorrência 03')
+    str_motiv_d = fields.Char(u'Motivo de ocorrência 04')
+    str_motiv_e = fields.Char(u'Motivo de ocorrência 05')

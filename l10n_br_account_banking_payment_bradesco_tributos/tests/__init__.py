@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-# #############################################################################
+# coding: utf-8
+# ###########################################################################
 #
-#
-#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
-#    @author Fernando Marcato Rodrigues
+#    Author: Luis Felipe Mileo
+#            Luiz Felipe do Divino
+#    Copyright 2015 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,16 +19,3 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from openerp import models, fields
-
-
-class L10nBrCnabFileSufixSequence(models.Model):
-    _name = 'l10n_br_cnab_file_sufix.sequence'
-
-    code = fields.Char(u'Código')
-    name = fields.Char(u'Nome')
-    internal_sequence_id = fields.Many2one(
-        'ir.sequence', u'Sequência Interna')
-    parent_payment_mode_suf = fields.Many2one(
-        'payment.mode', "Conta de exportação", select=True)
