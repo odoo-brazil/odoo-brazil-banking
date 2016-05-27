@@ -2,7 +2,7 @@
 # #############################################################################
 #
 #
-#    Copyright (C) 2012 KMEE (http://www.kmee.com.br)
+#    Copyright (C) 2016 KMEE (http://www.kmee.com.br)
 #    @author Fernando Marcato Rodrigues
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -23,14 +23,10 @@
 from openerp import models, fields
 
 
-class AccountBankStatementLine(models.Model):
-    """Extend model account.bank.statement.line."""
-    _inherit = "account.bank.statement.line"
+class ResPartner(models.Model):
 
-    # CNAB transactions can be imported more than once.
-    _sql_constraints = [
-        ('unique_import_id',
-         'CHECK(1=1)',
-         'A bank account transactions can be imported only once !')
-    ]
+    _inherit = 'res.partner'
 
+    type = fields.Selection(selection_add=[
+            ('cnab_cobranca', u'Cobrança CNAB'),
+        ])

@@ -22,6 +22,7 @@
 from ..cnab import Cnab
 from cnab240.tipos import ArquivoCobranca400
 from decimal import Decimal
+from openerp import api, models, fields, _
 from openerp.addons.l10n_br_base.tools.misc import punctuation_rm
 import datetime
 import re
@@ -191,6 +192,8 @@ class Cnab400(Cnab):
             else:
                 dias_protestar = int(self.order.mode.boleto_protesto_prazo)
 
+        sacado_endereco = self.retorna_endereco(line.partner_id.id)
+
 
         # Código agencia do cedente
         # cedente_agencia = cedente_agencia
@@ -257,10 +260,13 @@ class Cnab400(Cnab):
             'sacado_inscricao_numero': int(
                 self.rmchar(line.partner_id.cnpj_cpf)),
             'sacado_nome': line.partner_id.legal_name,
-            'sacado_endereco': (
-                line.partner_id.street +
-                ' ' + str(line.partner_id.number)
-            ),
+
+            # 'sacado_endereco': (
+            #     line.partner_id.street +
+            #     ' ' + str(line.partner_id.number)
+            # ),
+
+            'sacado_endereco': sacado_endereco,
 
             'sacado_bairro': line.partner_id.district,
             'sacado_cidade': line.partner_id.l10n_br_city_id.name,
@@ -315,3 +321,53 @@ class Cnab400(Cnab):
         campo = str(campo)
         chars_faltantes = num_digitos - len(campo)
         return (u' ' * chars_faltantes) + campo
+
+    # @api.multi
+    def retorna_endereco(self, id_parceiro):
+        # self.ensure_one()
+        # workaround to get env
+        res_partner_model = self.order.env['res.partner']
+        res_partner_end_cobranca = res_partner_model.search(
+            [('parent_id', '=', id_parceiro), ('type', '=', 'cnab_cobranca')],
+            limit=1)
+        if res_partner_end_cobranca:
+            str_endereco = self.monta_endereco(res_partner_end_cobranca)
+        else:
+            res_partner_end_cobranca = res_partner_model.search(
+                [('id', '=', id_parceiro)]
+            )
+            str_endereco = self.monta_endereco(res_partner_end_cobranca)
+            # Essa abordagem substitui caracteres especiais por '?'
+            # str_endereco = unicode(str_endereco.encode("ascii", errors="replace"))
+
+        # Substitui sinal de grau por espaço
+        str_endereco = str_endereco.replace(u"\xb0", u" ")
+
+        return str_endereco
+
+    def monta_endereco(self, partner_item):
+
+        street = self.check_address_item_filled(partner_item.street)
+        number = self.check_address_item_filled(partner_item.number)
+        complemento = self.check_address_item_filled(partner_item.street2)
+        distrito = self.check_address_item_filled(partner_item.district)
+
+        str_endereco = (
+            street
+            + ' ' +
+            number
+            + ' ' +
+            complemento
+            + ' ' +
+            distrito
+            # + ' ' +
+            # partner_item.l10n_br_city_id.name + \
+            # '  ' + partner_item.state_id.name
+        )
+        return str_endereco
+
+    def check_address_item_filled(self, item):
+        if item == False:
+            return ('')
+        else:
+            return item

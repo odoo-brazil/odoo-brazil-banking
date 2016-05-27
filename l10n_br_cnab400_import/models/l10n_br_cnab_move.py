@@ -20,20 +20,26 @@
 #
 ##############################################################################
 
-from openerp import models, fields
+from openerp import models, fields, api
 
 
-class AccounMoveLine(models.Model):
-    _inherit = "account.move.line"
+class L10nBrCnabMove(models.Model):
+    _name = "l10n_br_cnab.move"
+    _rec_name = 'bank_title_name'
+    _group_by = 'title_name_at_company'
 
-    cnab_move_ids = fields.One2many(
-        'l10n_br_cnab.move', 'move_line_id', u'Detalhes de retorno CNAB')
-    ml_identificacao_titulo_no_banco = fields.Char(
-        u'Identificação do título no banco')
-
+    move_line_id = fields.Many2one(
+        'account.move.line',
+        u'Movimentação')
+    bank_title_name = fields.Char(u'Identificação do título no banco')
+    title_name_at_company = fields.Char(u'Identificação do título na empresa')
+    sequencia_no_titulo = fields.Char(u'Sequência no título')
+    data_ocorrencia = fields.Char(u'Data da Ocorrência no Banco')
     str_ocorrencia = fields.Char(u'Identificação de Ocorrência')
+    cod_ocorrencia = fields.Char(u'Código Ocorrência')
     str_motiv_a = fields.Char(u'Motivo da ocorrência 01')
     str_motiv_b = fields.Char(u'Motivo de ocorrência 02')
     str_motiv_c = fields.Char(u'Motivo de ocorrência 03')
     str_motiv_d = fields.Char(u'Motivo de ocorrência 04')
     str_motiv_e = fields.Char(u'Motivo de ocorrência 05')
+    valor = fields.Float(u'Valor')

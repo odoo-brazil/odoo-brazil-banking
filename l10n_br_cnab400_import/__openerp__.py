@@ -31,12 +31,13 @@
         'python': ['cnab240'],
     },
     'depends': [
-        'account_bank_statement_import',
         'l10n_br_account',
+        'account_bank_statement_import',
     ],
     'data': [
-        'view/cnab_import_view.xml',
-        'view/account_move_line.xml',
+        'view/l10n_br_cnab_move_view.xml',
+        'view/account_move_line_view.xml',
+        'data/l10n_br_res_partner_bank_type.xml',
     ],
     'active': False,
     "installable": True,
