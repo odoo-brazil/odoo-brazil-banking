@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Account Payment Boleto module for Odoo
@@ -67,10 +67,12 @@ class report_custom(report_int):
         if not boleto_list:
             raise osv.except_osv(
                 'Error !', ('Não é possível gerar os boletos\n'
-                            'Certifique-se que a fatura esteja confirmada e o forma de pagamento seja duplicatas'))
+                            'Certifique-se que a fatura esteja confirmada e o '
+                            'forma de pagamento seja duplicatas'))
         pdf_string = Boleto.get_pdfs(boleto_list)
         self.obj = external_pdf(pdf_string)
         self.obj.render()
         return self.obj.pdf, 'pdf'
+
 
 report_custom('report.l10n_br_account_payment_boleto.report')

@@ -1,9 +1,10 @@
-# -*- encoding: utf-8 -*-
-##############################################################################
+# coding: utf-8
+# ###########################################################################
 #
-#    Odoo Brazil Account Payment Partner module for Odoo
-#    Copyright (C) 2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Miléo <mileo@kmee.com.br>
+#    Author: Luis Felipe Mileo
+#            Fernando Marcato Rodrigues
+#            Daniel Sadamo Hirayama
+#    Copyright 2015 KMEE - www.kmee.com.br
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,13 +20,3 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from openerp import models, fields
-
-
-class AccountMoveLine(models.Model):
-    _inherit = 'account.move.line'
-
-    payment_mode_id = fields.Many2one('payment.mode',
-                                      related='invoice.payment_mode_id',
-                                      string='Payment Mode')

@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Odoo Brazil Account Payment Partner module for Odoo
@@ -20,5 +20,4 @@
 #
 ##############################################################################
 
-from . import report
 from . import models

@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Account Payment Boleto module for Odoo
@@ -22,7 +22,7 @@
 ##############################################################################
 
 import logging
-from openerp import models, fields, api
+from openerp import models, api
 
 _logger = logging.getLogger(__name__)
 
