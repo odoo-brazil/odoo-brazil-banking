@@ -91,10 +91,17 @@ class Boleto:
         :param payment_mode:
         :return:
         """
+        instrucoes = payment_mode_id.instrucoes  + u"\n Após o vencimento cobrar multa de R$ %s e juros de %s%% ao dia." %(payment_mode_id.multa or '', payment_mode_id.cnab_percent_interest or '')
         self.boleto.convenio = payment_mode_id.boleto_convenio
         self.boleto.especie_documento = payment_mode_id.boleto_modalidade
         self.boleto.aceite = payment_mode_id.boleto_aceite
         self.boleto.carteira = payment_mode_id.boleto_carteira
+        self.boleto.instrucoes = instrucoes or ' '
+        self.boleto.cnab_percent_interest = payment_mode_id.cnab_percent_interest or ' '
+        self.boleto.boleto_protesto = payment_mode_id.boleto_protesto or ' '
+        self.boleto.boleto_protesto_prazo = payment_mode_id.boleto_protesto_prazo or ' '
+        self.boleto.boleto_especie = payment_mode_id.boleto_especie or ' '
+        self.boleto.comunicacao_2 = payment_mode_id.comunicacao_2 or ' '
 
     def _cedente(self, company):
         """
