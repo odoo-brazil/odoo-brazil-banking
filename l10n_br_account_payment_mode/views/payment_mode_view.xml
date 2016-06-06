@@ -12,6 +12,8 @@
                     <field name="payment_order_type"/>
                     <field name="internal_sequence_id"/>
                     <field name="type_payment"/>
+                    <field name="instrucoes"/>
+                    <field name="invoice_print"/>
                 </field>
                 <xpath expr="//form/group[@string='Note']" position="before">
                     <group string="Configurações" name='l10n-br-config' col="4">
@@ -19,8 +21,6 @@
                             <page string="Cobrança" attrs="{'invisible': [('sale_ok', '!=', True)]}">
                                 <group>
                                     <field name="type_sale_payment" invisible="1"/>
-                                    <field name="instrucoes"/>
-                                    <field name="invoice_print"/>
                                 </group>
                                 <notebook>
                                     <page string="Boleto"
@@ -40,8 +40,7 @@
                             <page string="Pagamento" attrs="{'invisible': [('purchase_ok', '!=', True)]}">
                                 <group>
                                     <field name="type_purchase_payment"/>
-                                    <field name="instrucoes"/>
-                                    <field name="invoice_print"/>
+                                    
                                 </group>
                             </page>
                         </notebook>
