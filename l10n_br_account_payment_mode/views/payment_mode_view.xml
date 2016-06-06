@@ -12,7 +12,6 @@
                     <field name="payment_order_type"/>
                     <field name="internal_sequence_id"/>
                     <field name="type_payment"/>
-                    <field name="instrucoes"/>
                     <field name="invoice_print"/>
                 </field>
                 <xpath expr="//form/group[@string='Note']" position="before">
