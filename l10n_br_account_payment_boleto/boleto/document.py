@@ -72,8 +72,12 @@ class Boleto:
         return self.branch_number.encode('utf-8')
 
     def _move_line(self, move_line):
+        
         multa = move_line.debit * move_line.payment_mode_id.multa  * 0.01 or move_line.credit * move_line.payment_mode_id.multa * 0.01 
-        instrucoes = move_line.payment_mode_id.instrucoes or ''  + u"\n Após o vencimento cobrar multa de R$ %s e juros de %s%% ao dia." %(multa or '', move_line.payment_mode_id.cnab_percent_interest or '')
+        instrucoes = ''
+        if move_line.payment_mode_id.instrucoes:
+            instrucoes =  move_line.payment_mode_id.instrucoes
+        instrucoes =  instrucoes  + u"\n Após o vencimento cobrar multa de R$ %s e juros de %s%% ao dia." %(str("%.2f" % multa) or '', str("%.2f" % move_line.payment_mode_id.cnab_percent_interest or '0.00'))
         self._payment_mode(move_line.payment_mode_id)
         self.boleto.data_vencimento = datetime.date(datetime.strptime(
             move_line.date_maturity, '%Y-%m-%d'))
