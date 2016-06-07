@@ -72,6 +72,8 @@ class Boleto:
         return self.branch_number.encode('utf-8')
 
     def _move_line(self, move_line):
+        multa = move_line.debit * move_line.payment_mode_id.multa  * 0.01 or move_line.credit * move_line.payment_mode_id.multa * 0.01 
+        instrucoes = move_line.payment_mode_id.instrucoes or ''  + u"\n Após o vencimento cobrar multa de R$ %s e juros de %s%% ao dia." %(multa or '', move_line.payment_mode_id.cnab_percent_interest or '')
         self._payment_mode(move_line.payment_mode_id)
         self.boleto.data_vencimento = datetime.date(datetime.strptime(
             move_line.date_maturity, '%Y-%m-%d'))
@@ -85,16 +87,24 @@ class Boleto:
             move_line.currency_id and move_line.currency_id.symbol or 'R$'
         self.boleto.quantidade = ''  # str("%.2f" % move_line.amount_currency)
         self.boleto.numero_documento = move_line.name.encode('utf-8')
+        self.boleto.instrucoes = instrucoes or ''
 
     def _payment_mode(self, payment_mode_id):
         """
         :param payment_mode:
         :return:
         """
+        
         self.boleto.convenio = payment_mode_id.boleto_convenio
         self.boleto.especie_documento = payment_mode_id.boleto_modalidade
         self.boleto.aceite = payment_mode_id.boleto_aceite
         self.boleto.carteira = payment_mode_id.boleto_carteira
+        
+        self.boleto.cnab_percent_interest = payment_mode_id.cnab_percent_interest or ' '
+        self.boleto.boleto_protesto = payment_mode_id.boleto_protesto or ' '
+        self.boleto.boleto_protesto_prazo = payment_mode_id.boleto_protesto_prazo or ' '
+        self.boleto.boleto_especie = payment_mode_id.boleto_especie or ' '
+        self.boleto.comunicacao_2 = payment_mode_id.comunicacao_2 or ' '
 
     def _cedente(self, company):
         """

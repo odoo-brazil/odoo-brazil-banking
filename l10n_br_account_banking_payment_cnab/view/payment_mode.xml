@@ -11,6 +11,7 @@
                     <group>
                         <field name="condicao_emissao_papeleta"/>
                         <field name="cnab_percent_interest"/>
+                        <field name="multa"/>
                         <field name="comunicacao_2"/>
                     </group>
 
