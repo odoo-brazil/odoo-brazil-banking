@@ -51,8 +51,6 @@ class AccountMoveLine(models.Model):
             if not move_line.payment_mode_id.boleto_type:
                 raise Warning(u'Configure o tipo de boleto no modo de '
                               u'pagamento')
-            if not move_line.payment_mode_id.boleto_convenio:
-                raise Warning(u"Codigo convênio not set in payment method")
             if not move_line.payment_mode_id.boleto_carteira:
                 raise Warning(u"Carteira not set in payment method")
             return True

@@ -73,7 +73,7 @@ class Boleto:
 
     def _move_line(self, move_line):
         
-        multa = move_line.debit * move_line.payment_mode_id.multa  * 0.01 or move_line.credit * move_line.payment_mode_id.multa * 0.01 
+        multa = (move_line.debit * move_line.payment_mode_id.multa  * 0.01) / 30 or (move_line.credit * move_line.payment_mode_id.multa * 0.01) / 30 
         instrucoes = ''
         if move_line.payment_mode_id.instrucoes:
             instrucoes =  move_line.payment_mode_id.instrucoes
