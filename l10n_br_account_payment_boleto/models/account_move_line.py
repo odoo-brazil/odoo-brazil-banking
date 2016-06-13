@@ -49,8 +49,7 @@ class AccountMoveLine(models.Model):
             if move_line.company_id.own_number_type != '2':
                 raise Warning(u"Tipo de nosso número Sequéncial uniquo por modo de pagamento")
             if not move_line.payment_mode_id.boleto_type:
-                raise Warning(u'Configure o tipo de boleto no modo de '
-                              u'pagamento')
+                raise Warning(u"Configure o tipo de boleto no modo de pagamento")
             if not move_line.payment_mode_id.boleto_carteira:
                 raise Warning(u"Carteira not set in payment method")
             return True
