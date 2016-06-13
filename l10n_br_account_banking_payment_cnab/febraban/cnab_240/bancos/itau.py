@@ -46,6 +46,7 @@ class Itau240(Cnab240):
         :param order:
         :return:
         """
+        
         vals = super(Itau240, self)._prepare_header()
         vals['cedente_dv_ag_cc'] = int(
             vals['cedente_dv_ag_cc'])

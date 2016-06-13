@@ -72,7 +72,6 @@ class Cnab240(Cnab):
         :return:
         """
         return {
-            'cedente_agencia_conta_dv' : int(self.order.mode.bank_id.bra_number_dig),
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'arquivo_data_de_geracao': self.data_hoje(),
             'arquivo_hora_de_geracao': self.hora_agora(),

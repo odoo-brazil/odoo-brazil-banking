@@ -56,6 +56,19 @@ class PaymentOrder(models.Model):
             raise Warning(u"Códigos de Protesto in payment mode not defined")
         if not self.mode.boleto_protesto_prazo:
             raise Warning(u"Prazo protesto in payment mode not defined")
+        else:
+            try:
+                int(self.mode.boleto_protesto_prazo)
+            except:
+                raise Warning("Prazo protesto in payment mode must be integer")
+        if not self.mode.bank_id.bra_number_dig:
+            raise Warning("Dígito Agência not defined")
+        else:
+            try:
+                int(self.mode.bank_id.bra_number_dig)
+            except:
+                raise Warning("Dígito Agência must be integer")
+
             
         # move lines must have transaction refernce
         for line in self.line_ids:
