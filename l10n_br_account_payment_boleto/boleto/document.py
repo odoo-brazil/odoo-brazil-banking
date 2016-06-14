@@ -73,8 +73,8 @@ class Boleto:
 
     def _move_line(self, move_line):
         
-        boleto_multa_percent = (move_line.debit * move_line.payment_mode_id.cnab_percent_interest  * 0.01) or (move_line.credit * move_line.payment_mode_id.cnab_percent_interest * 0.01) 
-        juros_by_day = (((move_line.debit or move_line.credit )+ boleto_multa_percent ) * move_line.payment_mode_id.multa * 0.01)/30
+        boleto_multa_percent = (move_line.debit * move_line.payment_mode_id.multa  * 0.01) or (move_line.credit * move_line.payment_mode_id.multa * 0.01) 
+        juros_by_day = (((move_line.debit or move_line.credit )+ boleto_multa_percent ) * move_line.payment_mode_id.cnab_percent_interest * 0.01)/30
         instrucoes = ''
         if move_line.payment_mode_id.instrucoes:
             instrucoes =  move_line.payment_mode_id.instrucoes
