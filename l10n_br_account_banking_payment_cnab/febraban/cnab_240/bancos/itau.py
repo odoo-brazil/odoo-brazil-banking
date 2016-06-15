@@ -64,9 +64,6 @@ class Itau240(Cnab240):
 
         carteira, nosso_numero, digito = self.nosso_numero(
             line.move_line_id.transaction_ref)
-        vals['cedente_dv_ag_cc'] = int(
-            vals['cedente_dv_ag_cc'])
-        vals['carteira_numero'] = int(carteira)
         vals['nosso_numero'] = int(nosso_numero)
         vals['nosso_numero_dv'] = int(digito)
 
