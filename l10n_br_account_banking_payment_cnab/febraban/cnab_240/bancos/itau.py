@@ -85,8 +85,9 @@ class Itau240(Cnab240):
         #should not return digit from this method
         # ust use nosso_numero_dv top return digit
         digito = format[-1:]
-        carteira = int(line.order_id.mode.boleto_carteira)
-        nosso_numero = int(line.move_line_id.transaction_ref)
+        carteira = format[:3]
+        nosso_numero = re.sub(
+            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
         return carteira, nosso_numero, digito
     
     def nosso_numero_dv(self, format):
