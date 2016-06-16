@@ -64,16 +64,45 @@ class Itau240(Cnab240):
 
         carteira, nosso_numero, digito = self.nosso_numero(
             line.move_line_id.transaction_ref)
-        vals['nosso_numero'] = int(nosso_numero)
-        vals['nosso_numero_dv'] = int(digito)
-
+        #=======================================================================
+        # nº da agência: 1572 
+        # nº da conta corrente, sem o DAC: 22211
+        # nº da subcarteira: 109 (Neste teste saiu 000, conforme já mencionado acima)
+        # nosso número: 00000008
+        # You multiply each char of the number composed with the fields above by the sequence of multipliers - 2 1 2 1 2 1 2 positioned from right to left.
+        # (agency+account+carteira+nossonumero) (15722221110900000008)
+        # 
+        #=======================================================================
+        reference = str(line.order_id.mode.bank_id.bra_number) + str(line.order_id.mode.bank_id.acc_number) + str(self.order.mode.boleto_carteira) + str(line.move_line_id.transaction_ref)
+        vals['carteira_numero'] = int(line.order_id.mode.boleto_carteira)
+        vals['nosso_numero'] = int(line.move_line_id.transaction_ref)
+        vals['nosso_numero_dv'] = int(self.nosso_numero_dv(reference))
         return vals
 
     # Override cnab_240.nosso_numero. Diferentes números de dígitos entre
     # CEF e Itau
     def nosso_numero(self, format):
+        #should not return digit from this method
+        # ust use nosso_numero_dv top return digit
         digito = format[-1:]
-        carteira = format[:3]
-        nosso_numero = re.sub(
-            '[%s]' % re.escape(string.punctuation), '', format[3:-1] or '')
+        carteira = int(line.order_id.mode.boleto_carteira)
+        nosso_numero = int(line.move_line_id.transaction_ref)
         return carteira, nosso_numero, digito
+    
+    def nosso_numero_dv(self, format):
+        i = 1
+        total = 0
+        # multiply all digits by 1 and 2 consicutively starting:
+        # eg:  1st x 1 + 2nd x 2 + 3rd x 1 + 4th x 2 + ........
+        position = 1
+        for digit in format:
+            if int(position) % 2 == 0:
+                result = int(digit) * 2
+            else:
+                result = int(digit) * 1
+            total = total + sum([int(digit) for digit in str(result)])
+            position += 1
+        digit = total % 10
+        if digit != 0:
+            digit = 10 - digit
+        return digit
