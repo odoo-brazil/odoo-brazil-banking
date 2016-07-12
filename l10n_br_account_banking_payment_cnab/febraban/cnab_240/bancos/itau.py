@@ -76,6 +76,8 @@ class Itau240(Cnab240):
         vals['carteira_numero'] = int(line.order_id.mode.boleto_carteira)
         vals['nosso_numero'] = int(ref)
         vals['nosso_numero_dv'] = int(self.nosso_numero_dv(reference))
+        vals['sacado_cidade'] = line.partner_id.l10n_br_city_id.name[:15]
+        vals['sacado_bairro'] = line.partner_id.district[:15]
         return vals
 
     # Override cnab_240.nosso_numero. Diferentes números de dígitos entre
