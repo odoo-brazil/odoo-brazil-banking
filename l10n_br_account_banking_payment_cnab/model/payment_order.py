@@ -85,9 +85,6 @@ class PaymentOrder(models.Model):
             # max 15 chars
             if not line.partner_id.district:
                 raise Warning("Partner's bairro not defined")
-            else:
-                if len(line.partner_id.district) > 15:
-                    raise Warning("Partner's bairro %s can't be more than 15 digits" %line.partner_id.district)
             if not line.partner_id.zip:
                 raise Warning("Partner's CEP not defined")
             if not line.partner_id.l10n_br_city_id:
