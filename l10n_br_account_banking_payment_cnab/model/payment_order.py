@@ -93,13 +93,12 @@ class PaymentOrder(models.Model):
                 raise Warning("Partner's street not defined")
             if not line.move_line_id.transaction_ref:
                 raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
-            # Itau code : 341
-            if self.mode.bank_id.bank.bic == '341' and len(line.move_line_id.transaction_ref) > 8:
-                raise Warning("Transaction reference for move line can not be longer than 8 digits found %s" %line.move_line_id.transaction_ref)
-            try:
-                int(line.move_line_id.transaction_ref)
-            except:
-                raise Warning("Transaction reference for move line must be integer")
+            # Itau code : 341 supposed not to be larger than 8 digits
+            if self.mode.bank_id.bank.bic == '341':
+                try:
+                    int(line.move_line_id.transaction_ref[4:12])
+                except:
+                    raise Warning("Transaction reference for move line must be integer")
             if not line.move_line_id.invoice.number:
                 raise Warning("Null value in 'numero_documento' number not defined for invoice %s" % line.move_line_id.invoice.number)
             if len(line.move_line_id.invoice.number) > 10:

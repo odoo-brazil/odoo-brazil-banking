@@ -61,9 +61,8 @@ class Itau240(Cnab240):
         :return:
         """
         vals = super(Itau240, self)._prepare_segmento(line)
-
-        carteira, nosso_numero, digito = self.nosso_numero(
-            line.move_line_id.transaction_ref)
+        ref = line.move_line_id.transaction_ref[4:12]
+        carteira, nosso_numero, digito = self.nosso_numero(ref)
         #=======================================================================
         # nº da agência: 1572 
         # nº da conta corrente, sem o DAC: 22211
@@ -73,9 +72,9 @@ class Itau240(Cnab240):
         # (agency+account+carteira+nossonumero) (15722221110900000008)
         # 
         #=======================================================================
-        reference = str(line.order_id.mode.bank_id.bra_number) + str(line.order_id.mode.bank_id.acc_number) + str(self.order.mode.boleto_carteira) + str(line.move_line_id.transaction_ref)
+        reference = str(line.order_id.mode.bank_id.bra_number) + str(line.order_id.mode.bank_id.acc_number) + str(self.order.mode.boleto_carteira) + str(ref)
         vals['carteira_numero'] = int(line.order_id.mode.boleto_carteira)
-        vals['nosso_numero'] = int(line.move_line_id.transaction_ref)
+        vals['nosso_numero'] = int(ref)
         vals['nosso_numero_dv'] = int(self.nosso_numero_dv(reference))
         return vals
 
