@@ -26,6 +26,7 @@ from openerp.report.interface import report_int
 from openerp import pooler
 from ..boleto.document import Boleto
 from openerp.osv import osv
+import base64
 
 
 class external_pdf(render):
@@ -73,6 +74,17 @@ class report_custom(report_int):
                             'forma de pagamento seja duplicatas'))
         pdf_string = Boleto.get_pdfs(boleto_list)
         self.obj = external_pdf(pdf_string)
+        if active_model == 'account.invoice' and len(active_ids):
+            for account_invoice in ai_obj.browse(cr, uid, active_ids):
+                file_name = "INV-%s-boleto.pdf" %account_invoice.move_id.name
+                attach_vals = {
+                    'name': file_name,
+                    'datas_fname': file_name,
+                    'datas': base64.b64encode(pdf_string),
+                    'res_model': 'account.invoice',
+                    'res_id': account_invoice.id,
+                }
+                pool.get('ir.attachment').create(cr, uid, attach_vals)
         self.obj.render()
         return self.obj.pdf, 'pdf'
 
