@@ -102,12 +102,12 @@ class AccountBankStatementImport(models.TransientModel):
         """Parse a CNAB file."""
         self.ensure_one()
         parser = cnabparser()
-        try:
-            _logger.debug("Try parsing with CNAB.")
-            return parser.parse(data_file, self.import_modes)
-        except ValueError:
-            # Not a CNAB file, returning super will call next candidate:
-            _logger.debug("Statement file was not a CNAB  file.",
-                          exc_info=True)
-            return super(AccountBankStatementImport, self)._parse_file(
-                data_file)
+
+        _logger.debug("Try parsing with CNAB.")
+        return parser.parse(data_file, self.import_modes)
+
+        # Not a CNAB file, returning super will call next candidate:
+        _logger.debug("Statement file was not a CNAB  file.",
+                      exc_info=True)
+        return super(AccountBankStatementImport, self)._parse_file(
+            data_file)

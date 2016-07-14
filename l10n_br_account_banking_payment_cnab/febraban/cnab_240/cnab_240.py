@@ -214,10 +214,6 @@ class Cnab240(Cnab):
             # TODO: tratar soma de tipos de cobranca
             cobrancasimples_valor_titulos += line.amount_currency
             #fixed 'quantidade_registros'  in trailer to 000001 
-            # not fixing more it would be number of lines
-            self.arquivo.lotes[0].trailer.quantidade_registros = len(order.line_ids)
-            #no of boletos
-            self.arquivo.lotes[0].trailer.cobrancasimples_quantidade_titulos = len(order.line_ids)
             self.arquivo.lotes[0].trailer.cobrancasimples_valor_titulos = \
                 Decimal(cobrancasimples_valor_titulos).quantize(
                     Decimal('1.00'))
