@@ -41,7 +41,7 @@ class PaymentMode(models.Model):
     type_payment = fields.Selection(
         [('00', u'00 - Duplicata'),
          ('99', u'99 - Outros')],
-        string='Tipo SPED', required=True, default='99')
+        string='Tipo SPED', required=True, default='00')
 
     type_purchase_payment = fields.Selection(
         [('01', u'01 - Crédito em conta-corrente ou poupança Bradesco'),

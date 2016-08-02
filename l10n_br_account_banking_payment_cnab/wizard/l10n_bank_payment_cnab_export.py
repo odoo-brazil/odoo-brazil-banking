@@ -47,6 +47,7 @@ class L10nPaymentCnab(models.TransientModel):
         for order_id in self.env.context.get('active_ids', []):
 
             order = self.env['payment.order'].browse(order_id)
+            order.validate_order()
             cnab = Cnab.get_cnab(order.mode.bank_id.bank_bic,
                                  order.mode_type.code)()
             remessa = cnab.remessa(order)
@@ -63,6 +64,17 @@ class L10nPaymentCnab(models.TransientModel):
                     time.strftime('%d%m'), str(order.file_number))
             self.state = 'done'
             self.cnab_file = base64.b64encode(remessa)
+            file_name = 'CB%s%s.REM' % (
+                    time.strftime('%d%m'), str(order.file_number))
+            # create attachment in payment order 
+            attach_vals = {
+                'name': file_name,
+                'datas_fname': file_name,
+                'datas': base64.b64encode(remessa),
+                'res_model': 'payment.order',
+                'res_id' : order.id,
+                }
+            self.env['ir.attachment'].create(attach_vals)
             workflow.trg_validate(self.env.uid, 'payment.order', order_id,
                                   'done', self.env.cr)
 

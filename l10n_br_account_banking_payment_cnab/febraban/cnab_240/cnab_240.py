@@ -72,6 +72,7 @@ class Cnab240(Cnab):
         :return:
         """
         return {
+            'cedente_agencia_conta_dv' : int(self.order.mode.bank_id.acc_number_dig),
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'arquivo_data_de_geracao': self.data_hoje(),
             'arquivo_hora_de_geracao': self.hora_agora(),
@@ -149,17 +150,18 @@ class Cnab240(Cnab):
         # Era cedente_agencia_conta_dv agora é cedente_dv_ag_cc
 
         return {
+            'cedente_agencia_conta_dv' : int(self.order.mode.bank_id.acc_number_dig),
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
             'cedente_agencia': int(self.order.mode.bank_id.bra_number),
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
             # DV ag e cc
-            'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
-            'identificacao_titulo': u'0000000',  # TODO
+            'cedente_dv_ag_cc': (self.order.mode.bank_id.acc_number_dig),
+            'identificacao_titulo': line.move_line_id.name,  # 25 chars limit 
             'identificacao_titulo_banco': u'0000000',  # TODO
-            'identificacao_titulo_empresa': line.move_line_id.move_id.name,
-            'numero_documento': line.name,
+            'identificacao_titulo_empresa': line.move_line_id.move_id.name, 
+            'numero_documento': line.move_line_id.invoice.number, # 10 chars limit 
             'vencimento_titulo': self.format_date(
                 line.ml_maturity_date),
             'valor_titulo': Decimal(str(line.amount_currency)).quantize(
@@ -211,9 +213,11 @@ class Cnab240(Cnab):
             self.arquivo.lotes[0].header.servico_servico = 1
             # TODO: tratar soma de tipos de cobranca
             cobrancasimples_valor_titulos += line.amount_currency
+            #fixed 'quantidade_registros'  in trailer to 000001 
             self.arquivo.lotes[0].trailer.cobrancasimples_valor_titulos = \
                 Decimal(cobrancasimples_valor_titulos).quantize(
                     Decimal('1.00'))
+            
 
         remessa = unicode(self.arquivo)
         return unicodedata.normalize(

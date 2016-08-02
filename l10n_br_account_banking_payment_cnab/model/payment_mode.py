@@ -32,6 +32,7 @@ class PaymentMode(models.Model):
             u'Condição Emissão de Papeleta', default='1')
     cnab_percent_interest = fields.Float(string=u"Percentual de Juros",
                                          digits=dp.get_precision('Account'))
+    multa = fields.Float('Multa')
     comunicacao_2 = fields.Char("Comunicação para o sacador avalista")
     # A exportação CNAB não se encaixa somente nos parâmetros de
     # débito e crédito.
