@@ -65,6 +65,7 @@ class PaymentOrder(models.Model):
             raise Warning("Dígito Agência not defined")
         else:
             try:
+                # FIXME: might not be ok for Banco do Brasil. Ok for Itau and Bradesco.
                 int(self.mode.bank_id.bra_number_dig)
             except:
                 raise Warning("Dígito Agência must be integer")
@@ -95,9 +96,7 @@ class PaymentOrder(models.Model):
                 raise Warning("Partner's street not defined")
 
             # FIXME transaction_ref might not be known at the time of exportation.
-            # Is that a rule for Itau or one possibilitie?
-            # if not line.move_line_id.transaction_ref:
-            #     raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
+            # Is that a rule for Itau or one possibilitie? This rules goes to itau.py
 
             # Itau code : 341 supposed not to be larger than 8 digits
             if self.mode.bank_id.bank.bic == '341':

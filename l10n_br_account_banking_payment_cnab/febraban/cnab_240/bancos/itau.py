@@ -65,6 +65,9 @@ class Itau240(Cnab240):
         :return:
         """
         vals = super(Itau240, self)._prepare_segmento(line)
+
+        if not line.move_line_id.transaction_ref:
+            raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
         ref = line.move_line_id.transaction_ref[4:12]
         carteira, nosso_numero, digito = self.nosso_numero(ref)
         #=======================================================================

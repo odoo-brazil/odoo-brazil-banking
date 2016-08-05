@@ -72,10 +72,17 @@ class Boleto:
         return self.branch_number.encode('utf-8')
 
     def _move_line(self, move_line):
-        
-        boleto_multa_percent = (move_line.debit * move_line.payment_mode_id.multa  * 0.01) or (move_line.credit * move_line.payment_mode_id.multa * 0.01) 
+
+        #  FIXME
+        # Fields multa and cnab_percent_interest have the same purpose. One of them will disappear, but not now to keep compatibility
+        boleto_multa_percent = (move_line.debit * move_line.payment_mode_id.multa  * 0.01) or (move_line.credit * move_line.payment_mode_id.multa * 0.01)
+        # Considered boletos, we'll use this routine to charge customers and pay them?
+        # If it's only to charge, makes sense to keep calculations with move_line.credit?
         juros_by_day = (((move_line.debit or move_line.credit )+ boleto_multa_percent ) * move_line.payment_mode_id.cnab_percent_interest * 0.01)/30
         instrucoes = ''
+        # FIXME
+        # the string below and field comunicacao_2 have the same purpose. One of them will disappear too.
+        # unless this message changes (besides boleto_multa_percent value)
         if move_line.payment_mode_id.instrucoes:
             instrucoes =  move_line.payment_mode_id.instrucoes
         instrucoes =  instrucoes  + u"\n Após o vencimento cobrar multa de R$ %s e juros de R$ %s ao dia." %(str("%.2f" % boleto_multa_percent) or '', str("%.2f" % juros_by_day or '0.00'))
@@ -104,10 +111,11 @@ class Boleto:
         self.boleto.especie_documento = payment_mode_id.boleto_modalidade
         self.boleto.aceite = payment_mode_id.boleto_aceite
         self.boleto.carteira = payment_mode_id.boleto_carteira
-        
-        self.boleto.cnab_percent_interest = payment_mode_id.cnab_percent_interest or ' '
-        self.boleto.boleto_protesto = payment_mode_id.boleto_protesto or ' '
-        self.boleto.boleto_protesto_prazo = payment_mode_id.boleto_protesto_prazo or ' '
+
+        # It's not a good idea to replace by a string on fields that are integers on CNAB files.
+        # self.boleto.cnab_percent_interest = payment_mode_id.cnab_percent_interest or ' '
+        # self.boleto.boleto_protesto = payment_mode_id.boleto_protesto or ' '
+        # self.boleto.boleto_protesto_prazo = payment_mode_id.boleto_protesto_prazo or ' '
         self.boleto.boleto_especie = payment_mode_id.boleto_especie or ' '
         self.boleto.comunicacao_2 = payment_mode_id.comunicacao_2 or ' '
 
