@@ -50,8 +50,8 @@ class PaymentOrder(models.Model):
         if self.mode_type.code not in ['240', '400', '500']:
             raise Warning("Payment Type Code must be 240, 400 or 500, found %s" % self.mode_type.code)
         # legal name max length is accepted 30 chars
-        if len(self.company_id.legal_name) > 30:
-            raise Warning("Company's Rezão Social should not be longer than 30 chars")
+        # Yes, but since this is a CNAB file restriction, crop the string at the 30 char. Moved to itau.py
+
         if not self.mode.boleto_protesto:
             raise Warning(u"Códigos de Protesto in payment mode not defined")
         if not self.mode.boleto_protesto_prazo:
@@ -75,9 +75,11 @@ class PaymentOrder(models.Model):
             if not line.partner_id:
                 raise Warning("Partner not defined for %s" %line.name)
             if not line.partner_id.legal_name:
-                raise Warning("Rezão Social not defined for %s" %line.partner_id.name)
-            if len(line.partner_id.legal_name) > 30:
-                raise Warning("Partner's Rezão Social should not be longer than 30 chars")
+                raise Warning("Razão Social not defined for %s" %line.partner_id.name)
+
+            # if len(line.partner_id.legal_name) > 30:
+            #     raise Warning("Partner's Razão Social should not be longer than 30 chars") -> moved to itau.py
+
             if not line.partner_id.state_id:
                 raise Warning("Partner's state not defined")
             if not line.partner_id.state_id.code:
@@ -91,8 +93,12 @@ class PaymentOrder(models.Model):
                 raise Warning("Partner's city not defined")
             if not line.partner_id.street:
                 raise Warning("Partner's street not defined")
-            if not line.move_line_id.transaction_ref:
-                raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
+
+            # FIXME transaction_ref might not be known at the time of exportation.
+            # Is that a rule for Itau or one possibilitie?
+            # if not line.move_line_id.transaction_ref:
+            #     raise Warning("No transaction reference set for move %s" % line.move_line_id.name)
+
             # Itau code : 341 supposed not to be larger than 8 digits
             if self.mode.bank_id.bank.bic == '341':
                 try:

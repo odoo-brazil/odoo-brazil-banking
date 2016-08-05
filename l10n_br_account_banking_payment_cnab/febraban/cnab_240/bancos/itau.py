@@ -52,6 +52,10 @@ class Itau240(Cnab240):
             vals['cedente_dv_ag_cc'])
         vals['cedente_agencia_dv'] = int(
             vals['cedente_agencia_dv'])
+
+        # Company's Razão Social limited to 30 chars
+        vals['cedente_nome'] = (vals['cedente_nome'][:30])
+
         return vals
 
     def _prepare_segmento(self, line):
@@ -78,6 +82,10 @@ class Itau240(Cnab240):
         vals['nosso_numero_dv'] = int(self.nosso_numero_dv(reference))
         vals['sacado_cidade'] = line.partner_id.l10n_br_city_id.name[:15]
         vals['sacado_bairro'] = line.partner_id.district[:15]
+
+        # Partner's legal name 30 chars restriction
+        vals['sacado_nome'] = vals['sacado_nome'][:30]
+
         return vals
 
     # Override cnab_240.nosso_numero. Diferentes números de dígitos entre
