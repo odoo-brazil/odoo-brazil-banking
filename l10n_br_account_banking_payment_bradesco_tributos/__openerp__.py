@@ -41,6 +41,6 @@
         'view/payment_mode.xml',
         'view/guia_recolhimento.xml',
     ],
-    "installable": True,
+    'installable': False,
     "auto_install": False,
 }
