@@ -22,6 +22,7 @@ virtualenv:
 install:
   - git clone https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
+  - pip install pillow==3.4.2
   - pip install -U pip wheel
   - pip install unidecode
   - pip install python-dateutil
