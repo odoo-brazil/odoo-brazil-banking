@@ -31,7 +31,7 @@ install:
   - pip install git+https://github.com/aricaldeira/pybrasil.git
   - pip install pyboleto
   - pip install fixedwidth
-  - pip install https://github.com/odoo-brazil/cnab240/archive/master.zip
+  - pip install https://github.com/kmee/cnab240/archive/master.zip
   - travis_install_nightly
 
 before_script:
