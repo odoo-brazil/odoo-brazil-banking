@@ -23,7 +23,7 @@
 
 {
     'name': 'Odoo Brasil Account Payment Boleto',
-    'version': '0.1',
+    'version': '8.0.1.0.0',
     'category': 'Banking addons',
     'license': 'AGPL-3',
     'summary': 'Adds payment mode boleto on move lines',
@@ -46,4 +46,9 @@
         'demo/payment_demo.xml',
     ],
     'active': False,
+    'external_dependencies': {
+        'python': [
+            'pyboleto',
+        ],
+    },
 }

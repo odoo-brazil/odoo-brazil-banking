@@ -20,21 +20,31 @@
 ##############################################################################
 import logging
 import tempfile
-import StringIO
-from openerp import api, models, fields
-from openerp.tools.translate import _
-from openerp.exceptions import Warning as UserError
 from contextlib import contextmanager
+import codecs
+
+from openerp import api, models
+from openerp.exceptions import Warning as UserError
+from openerp.tools.translate import _
 
 try:
     import cnab240
-    from cnab240.tipos import ArquivoCobranca400 as cnab_parser
-    from cnab240.bancos import bradesco_cobranca_retorno_400 as bradesco
-    from cnab240.ocorrencias import retorna_ocorrencia, \
-        retorna_motivios_ocorrencia
-    import codecs
 except:
     raise Exception(_('Please install python lib PyCNAB'))
+try:
+    from cnab240.tipos import ArquivoCobranca400 as cnab_parser
+except:
+    raise Exception(_('Can\'t import ArquivoCobranca400'))
+try:
+    from cnab240.bancos import bradesco_cobranca_retorno_400 as bradesco
+except:
+    raise Exception(_('Can\'t import bradesco_cobranca_retorno_400'))
+try:
+    from cnab240.ocorrencias import retorna_ocorrencia, \
+        retorna_motivios_ocorrencia
+except:
+    raise Exception(_('Can\'t import retorna_ocorrencia '
+                      'ou retorna_motivios_ocorrencia'))
 
 
 _logger = logging.getLogger(__name__)
@@ -116,7 +126,7 @@ class AccountBankStatementImport(models.TransientModel):
                             'balance_end_real': float(
                                 cnab.trailer
                                     .valor_registros_ocorrencia_06_liquidacao
-                            )/100,
+                            ) / 100,
                             'date':
                                 dia_criacao + "-" + mes_criacao + "-" +
                                 ano_criacao,
@@ -127,8 +137,8 @@ class AccountBankStatementImport(models.TransientModel):
                                 is_created = self.create_cnab_move(evento)
                             if is_created:
                                 if evento.identificacao_ocorrencia == 6 or \
-                                                evento.identificacao_ocorrencia\
-                                                == 15:
+                                        evento.identificacao_ocorrencia\
+                                        == 15:
                                     data = str(evento.data_ocorrencia_banco)
                                     if len(data) < 6:
                                         data = '0' + data
@@ -149,10 +159,12 @@ class AccountBankStatementImport(models.TransientModel):
                                         ])
                                     vals_line = {
                                         'date': dia + "-" + mes + "-" + ano,
-                                        'name': str(evento.identificacao_titulo_banco),
+                                        'name': str(
+                                            evento.identificacao_titulo_banco
+                                        ),
                                         'ref': evento.numero_documento,
                                         'amount': float(
-                                            evento.valor_pago)/100,
+                                            evento.valor_pago) / 100,
                                         'unique_import_id':
                                             evento.identificacao_titulo_banco,
 
@@ -167,8 +179,8 @@ class AccountBankStatementImport(models.TransientModel):
                     ))
 
                 return False, str(
-                            cnab.header.codigo_empresa
-                       ), [vals_bank_statement]
+                    cnab.header.codigo_empresa
+                ), [vals_bank_statement]
         except:
             return super(AccountBankStatementImport, self)._parse_file(
                 data_file)
@@ -217,7 +229,7 @@ class AccountBankStatementImport(models.TransientModel):
             'str_motiv_c': motivos[2],
             'str_motiv_d': motivos[3],
             'str_motiv_e': motivos[4],
-            'valor': float(evento.valor_titulo)/100,
+            'valor': float(evento.valor_titulo) / 100,
             'company_id': self.env.user.company_id.id,
         }
         cnab_move = self.env['l10n_br_cnab.move']

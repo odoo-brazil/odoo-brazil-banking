@@ -22,7 +22,7 @@
 
 {
     'name': 'Import CNAB Bank Statement',
-    'version': '0.1',
+    'version': '8.0.1.0.0',
     'category': 'Banking addons',
     'license': 'AGPL-3',
     'author': 'KMEE',
@@ -38,7 +38,7 @@
         'view/cnab_import_view.xml',
     ],
     'active': False,
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     'description': """
     Allows to import CNAB (Centro Nacional de Automação Bancária) statement

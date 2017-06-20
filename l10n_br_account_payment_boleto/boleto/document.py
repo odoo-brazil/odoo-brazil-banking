@@ -21,7 +21,15 @@
 ##############################################################################
 
 from datetime import datetime, date
-from pyboleto import bank
+import logging
+
+_logger = logging.getLogger(__name__)
+
+try:
+    from pyboleto import bank
+except ImportError as err:
+    _logger.debug = err
+
 
 try:
     from cStringIO import StringIO
@@ -149,6 +157,7 @@ class Boleto:
 
 
 class BoletoBB(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         # TODO: size o convenio and nosso numero, replace (7,2)
         # Size of convenio 4, 6, 7 or 8
@@ -164,6 +173,7 @@ class BoletoBB(Boleto):
 
 
 class BoletoBarisul(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -173,6 +183,7 @@ class BoletoBarisul(Boleto):
 
 
 class BoletoBradesco(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -186,6 +197,7 @@ class BoletoBradesco(Boleto):
 
 
 class BoletoCaixa(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -198,6 +210,7 @@ class BoletoCaixa(Boleto):
 
 
 class BoletoHsbc(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -207,6 +220,7 @@ class BoletoHsbc(Boleto):
 
 
 class BoletoItau157(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -216,6 +230,7 @@ class BoletoItau157(Boleto):
 
 
 class BoletoItau(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -225,6 +240,7 @@ class BoletoItau(Boleto):
 
 
 class BoletoReal(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -234,6 +250,7 @@ class BoletoReal(Boleto):
 
 
 class BoletoSantander101(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -244,6 +261,7 @@ class BoletoSantander101(Boleto):
 
 
 class BoletoStatander101201(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number
@@ -254,6 +272,7 @@ class BoletoStatander101201(Boleto):
 
 
 class BoletoCaixaSigcb(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         from pyboleto.bank.caixa_sigcb import BoletoCaixaSigcb
         self.boleto = BoletoCaixaSigcb()
@@ -267,6 +286,7 @@ class BoletoCaixaSigcb(Boleto):
 
 
 class BoletoSicredi(Boleto):
+
     def __init__(self, move_line, nosso_numero):
         self.boleto = Boleto.getBoletoClass(move_line)()
         self.account_number = move_line.payment_mode_id.bank_id.acc_number

@@ -21,12 +21,14 @@
 ##############################################################################
 
 
-from ..pag_for500 import PagFor500
 import re
 import string
 
+from ..pag_for500 import PagFor500
+
 
 class BradescoPagFor(PagFor500):
+
     def __init__(self):
         super(PagFor500, self).__init__()
         from cnab240.bancos import bradescoPagFor
