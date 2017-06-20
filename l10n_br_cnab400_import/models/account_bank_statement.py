@@ -29,12 +29,15 @@ class AccountBankStatementLine(models.Model):
     def get_reconcile_lines_from_cnab_move(self, this, excluded_ids=None):
         """return move.line to reconcile with statement line"""
         move_lines = self.env['account.move.line'].search(
-            [('transaction_ref', '=', this.name),
-             ('name', '=', this.ref)
-             ])
+                [('transaction_ref', '=', this.name),
+                 ('name', '=', this.ref),
+                 ('company_id', '=', self.env.user.company_id.id)
+                 ])
         try:
             assert len(move_lines) <= 1
-        except:
+        except Exception, e:
+            e.message = str(move_lines[0].move_id.name)
+            e.message2 = str(move_lines[1].move_id.name)
             raise UserError(_(
                 "Erro!\n "
                 "Nosso numero duplicado"
