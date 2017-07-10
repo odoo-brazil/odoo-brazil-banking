@@ -20,16 +20,26 @@
 #
 ##############################################################################
 
-from fixedwidth.fixedwidth import FixedWidth
-from openerp.addons.l10n_br_base.tools.misc import punctuation_rm
-from decimal import Decimal
 import unicodedata
+import logging
+
+from openerp.addons.l10n_br_base.tools.misc import punctuation_rm
+
+_logger = logging.getLogger(__name__)
+
+try:
+    from fixedwidth.fixedwidth import FixedWidth
+except ImportError as err:
+    _logger.debug = err
+
 
 def strip_accents(s):
-   return ''.join(c for c in unicodedata.normalize('NFD', s)
-                  if unicodedata.category(c) != 'Mn')
+    return ''.join(c for c in unicodedata.normalize('NFD', s)
+                   if unicodedata.category(c) != 'Mn')
+
 
 class BradescoTax(object):
+
     def __init__(self):
         pass
 
@@ -346,7 +356,6 @@ class BradescoGnre(BradescoTaxLine):
             },
         }
 
-
     def remessa(self, order):
         result = ''
         for line in order.line_ids:
@@ -370,13 +379,15 @@ class BradescoGnre(BradescoTaxLine):
                 'telefone_cliente': str(punctuation_rm(line.partner_id.phone)),
                 'numero_inscricao': str(
                     punctuation_rm(line.partner_id.cnpj_cpf)
-                                        ),
-                'valor_do_principal': punctuation_rm(str(line.amount_currency)),
+                ),
+                'valor_do_principal': punctuation_rm(
+                    str(line.amount_currency)),
                 'data_pagamento_tributo': punctuation_rm(line.date),
                 'data_vencimento_tributo': punctuation_rm(line.date),
                 'codigo_de_receita': str(punctuation_rm(
                     line.order_id.mode.gnre_type.code)),
-                'num_doc_origem': str(punctuation_rm(line.ml_inv_ref.internal_number)),
+                'num_doc_origem': str(
+                    punctuation_rm(line.ml_inv_ref.internal_number)),
             }
             result += "%s\n" % self._remessa(**vals)
         return result

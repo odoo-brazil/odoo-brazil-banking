@@ -18,9 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from decimal import Decimal
 from openerp import models, api, _
-from openerp.tools.float_utils import float_repr
 from openerp.exceptions import Warning as UserError
 
 
@@ -42,8 +40,7 @@ class AccountBankStatementLine(models.Model):
             e.message2 = str(move_lines[1].move_id.name)
             raise UserError(_(
                 "Erro!\n "
-                "O número bancário está duplicado nos lançamentos %s e %s.\n "
-                "Remova o lançamento errado e prossiga com a reconciliação." % (e.message, e.message2)
+                "Nosso numero duplicado"
             ))
         return self.env['account.move.line']\
             .prepare_move_lines_for_reconciliation_widget(move_lines)
@@ -61,4 +58,5 @@ class AccountBankStatementLine(models.Model):
             return []
         else:
             return super(AccountBankStatementLine, self)\
-              .get_reconciliation_proposition(this, excluded_ids=excluded_ids)
+                .get_reconciliation_proposition(
+                this, excluded_ids=excluded_ids)
