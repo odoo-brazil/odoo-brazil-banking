@@ -54,10 +54,10 @@ class Cnab240(Cnab):
     @staticmethod
     def get_bank(bank):
         '''
-        Função chamada na criação do CNAB que dado o código do banco, 
-        instancia o objeto do banco e retorna o obj ao CNAB que sera criado. 
+        Função chamada na criação do CNAB que dado o código do banco,
+        instancia o objeto do banco e retorna o obj ao CNAB que sera criado.
         :param bank: str - Código do banco
-        :return: 
+        :return:
         '''
         if bank == '341':
             from .bancos.itau import Itau240
@@ -87,7 +87,7 @@ class Cnab240(Cnab):
     def _prepare_header(self):
         """
         Preparar o header do arquivo do CNAB
-        :return: dict - Header do arquivo 
+        :return: dict - Header do arquivo
         """
         header_arquivo = {
             # CONTROLE
@@ -254,7 +254,7 @@ class Cnab240(Cnab):
             # SERVICO
             # 04.3A - Nº Seqüencial do Registro - Inicia em 1 em cada novo lote
             # TODO: Contador para o sequencial do lote
-              'servico_numero_registro': 1,
+            'servico_numero_registro': 1,
             # 05.3A
             #   Segmento Código de Segmento do Reg.Detalhe
             # 06.3A
@@ -276,8 +276,8 @@ class Cnab240(Cnab):
             # 13.3A
             'favorecido_dv': line.bank_id.acc_number_dig[0],
             # 14.3A
-            'favorecido_conta_dv': line.bank_id.acc_number_dig[1]
-                if len(line.bank_id.bra_number_dig) > 1 else '',
+            'favorecido_conta_dv': line.bank_id.acc_number_dig[1] if
+            len(line.bank_id.bra_number_dig) > 1 else '',
             # 15.3A
             'favorecido_nome': line.partner_id.name,
 
@@ -376,14 +376,15 @@ class Cnab240(Cnab):
 
     def _adicionar_evento(self, line):
         """
-        Adicionar o evento no arquivo de acordo com seu tipo 
+        Adicionar o evento no arquivo de acordo com seu tipo
         """
-        if self.order.payment_order_type == 'payment':
-            incluir = self.arquivo.incluir_debito_pagamento
-            prepare = self._prepare_pagamento
-        else:
-            incluir = self.arquivo.incluir_cobranca
-            prepare = self._prepare_cobranca
+        # if self.order.payment_order_type == 'payment':
+        #     incluir = self.arquivo.incluir_debito_pagamento
+        #     prepare = self._prepare_pagamento
+        # else:
+        #     incluir = self.arquivo.incluir_cobranca
+        #     prepare = self._prepare_cobranca
+        pass
 
     def remessa(self, order):
         """
@@ -391,7 +392,7 @@ class Cnab240(Cnab):
         :param order: payment.order
         :return: Arquivo Cnab pronto para download
         """
-        cobrancasimples_valor_titulos = 0
+        # cobrancasimples_valor_titulos = 0
 
         self.order = order
 
@@ -450,7 +451,7 @@ class Cnab240(Cnab):
     def nosso_numero(self, format):
         """
         Hook para ser sobrescrito e adicionar informação
-        :param format: 
-        :return: 
+        :param format:
+        :return:
         """
         pass
