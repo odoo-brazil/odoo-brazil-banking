@@ -84,54 +84,68 @@ class Cnab240(Cnab):
         :param:
         :return:
         """
-        return {
+        header_arquivo = {
+            # CONTROLE
+            # 01.0
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
-            'arquivo_data_de_geracao': self.data_hoje(),
-            'arquivo_hora_de_geracao': self.hora_agora(),
+            # 02.0 # Sequencia para o Arquivo
+            'controle_lote': 1,
+            # 03.0  0- Header do Arquivo
+            'controle_registro': 0,
+            # 04.0
+            # CNAB - Uso Exclusivo FEBRABAN / CNAB
 
-            # TODO: Número sequencial de arquivo
-            'arquivo_sequencia': int(self.get_file_numeration()),
-            'cedente_inscricao_tipo': self.inscricao_tipo,
-            'cedente_inscricao_numero': int(punctuation_rm(
-                self.order.company_id.cnpj_cpf)),
-            'cedente_agencia': int(
-                self.order.mode.bank_id.bra_number),
-            'cedente_conta': int(self.order.mode.bank_id.acc_number),
-            'cedente_conta_dv': (self.order.mode.bank_id.acc_number_dig),
+            # EMPRESA
+            # 05.0 - 1 - CPF / 2 - CNPJ
+            'cedente_inscricao_tipo':
+                self.inscricao_tipo(self.order.company_id.partner_id),
+            # 06.0
+            'cedente_inscricao_numero':
+                int(punctuation_rm(self.order.company_id.cnpj_cpf)),
+            # 07.0
+            'cedente_convenio': '0001222130126',
+            # 08.0
+            'cedente_agencia':
+                int(self.order.mode.bank_id.bra_number),
+            # 09.0
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
+            # 10.0
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
+            # 11.0
+            'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig[0],
+            # 12.0
+            'cedente_agencia_conta_dv':
+                self.order.mode.bank_id.bra_acc_dig[1]
+                if len(self.order.mode.bank_id.bra_acc_dig) > 1 else '',
+            # 13.0
             'cedente_nome': self.order.company_id.legal_name,
-            # DV ag e conta
-            'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
+            # 14.0
+            'nome_banco': self.order.mode.bank_id.bank_name,
+            # 15.0
+            #   CNAB - Uso Exclusivo FEBRABAN / CNAB
 
-            # 'arquivo_codigo': 1,  # Remessa/Retorno
-            'servico_operacao': u'R',
-            'nome_banco': unicode(self.order.mode.bank_id.bank_name),
+            # ARQUIVO
+            # 16.0 Código Remessa = 1 / Retorno = 2
+            'arquivo_codigo': '1',
+            # 17.0
+            'arquivo_data_de_geracao': self.data_hoje(),
+            # 18.0
+            'arquivo_hora_de_geracao': self.hora_agora(),
+            # 19.0 TODO: Número sequencial de arquivo
+            'arquivo_sequencia': int(self.get_file_numeration()),
+            # 20.0
+            'arquivo_layout': 103,
+            # 21.0
+            'arquivo_densidade': 0,
+            # 22.0
+            'reservado_banco': '0',
+            # 23.0
+            'reservado_empresa': 'EMPRESA 100',
+            # 24.0
+            # CNAB - Uso Exclusivo FEBRABAN / CNAB
         }
-    #     return {
-    #     'controle_banco': 1,
-    #     'arquivo_data_de_geracao': 12606201,
-    #     'arquivo_densidade': 0,
-    #     'arquivo_hora_de_geracao': 700000,
-    #     'arquivo_layout': 103,
-    #     'arquivo_sequencia': 0,
-    #     'cedente_agencia': 1234,
-    #     'cedente_agencia_dv': '1',
-    #     'cedente_conta': 333333,
-    #     'cedente_conta_dv': '0',
-    #     'cedente_convenio': '0001234567891',
-    #     'cedente_agencia_conta_dv': '',
-    #     'cedente_inscricao_numero': 23130935000198,
-    #     'cedente_inscricao_tipo': 2,
-    #     'cedente_nome': "KMEE INFORMATICA LTDA",
-    #     'controle_lote': 0,
-    #     'controle_registro': 0,
-    #     'nome_do_banco': 'BANCO DO BRASIL',
-    #     'reservado_banco': '0',
-    #     'reservado_empresa': 'EMPRESA 100',
-    #     'vazio1': '',
-    #     'vazio3': '',
-    #     'vazio4': 'CSP000',
-    # }
+
+        return header_arquivo
 
     def get_file_numeration(self):
         numero = self.order.get_next_number()
