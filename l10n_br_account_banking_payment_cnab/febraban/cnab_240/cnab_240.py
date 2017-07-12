@@ -119,9 +119,6 @@ class Cnab240(Cnab):
             # 11.0
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig[0],
             # 12.0
-            'cedente_agencia_conta_dv':
-                self.order.mode.bank_id.bra_acc_dig[1]
-                if len(self.order.mode.bank_id.bra_acc_dig) > 1 else '',
             # 13.0
             'cedente_nome': self.order.company_id.legal_name,
             # 14.0
@@ -197,8 +194,6 @@ class Cnab240(Cnab):
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
-            # DV ag e cc
-            'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
             'identificacao_titulo': u'0000000',  # TODO
             'identificacao_titulo_banco': u'0000000',  # TODO
             'identificacao_titulo_empresa': line.move_line_id.move_id.name,
