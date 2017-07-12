@@ -119,8 +119,12 @@ class Cnab240(Cnab):
             # 11.0
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig[0],
             # 12.0
+            'cedente_agencia_conta_dv':
+                self.order.mode.bank_id.acc_number_dig[1]
+                if len(self.order.mode.bank_id.acc_number_dig) > 1 else '',
             # 13.0
-            'cedente_nome': self.order.company_id.legal_name,
+            'cedente_nome':
+                self.order.mode.bank_id.partner_id.legal_name[:30],
             # 14.0
             'nome_banco': self.order.mode.bank_id.bank_name,
             # 15.0
@@ -140,7 +144,7 @@ class Cnab240(Cnab):
             # 21.0
             'arquivo_densidade': 0,
             # 22.0
-            'reservado_banco': '0',
+            'reservado_banco': '',
             # 23.0
             'reservado_empresa': 'EMPRESA 100',
             # 24.0
@@ -238,11 +242,92 @@ class Cnab240(Cnab):
     def _prepare_pagamento(self, line):
         """
         Prepara um dict para preencher os valores do segmento A e B apartir de
-        uma linha da payment.order
+        uma linha da payment.order e insere informações que irão compor o 
+        header do lote
         :param line: payment.line - linha que sera base para evento
         :return: dict - Dict contendo todas informações dos segmentos
         """
         vals = {
+
+            # HEADER DO LOTE
+            #  CONTROLE
+            # 01.1
+            'controle_banco': int(self.order.mode.bank_id.bank_bic),
+            # 02.1
+            'controle_lote': 1,
+            # 03.1
+            'controle_registro': 3,
+
+            # SERVICO
+            # 04.1
+            'servico_operacao': 'C',
+            # 05.1
+            'servico_servico': 30,
+            # 06.1
+            'servico_forma_lancamento': 1,
+            # 07.1
+            'servico_layout': 20,
+            # 08.1
+            # CNAB - Uso Exclusivo da FEBRABAN/CNAB
+
+            # EMPRESA
+            # 09.1
+            'empresa_inscricao_tipo': 2,
+            # 10.1
+
+            # 11.1
+            # 12.1
+            # 13.1
+            # 14.1
+            # 15.1
+            # 16.1
+            # 17.1
+            # 18.1
+            # 19.1
+            # 20.1
+            # 21.1
+            # 22.1
+            # 23.1
+            # 24.1
+            # 25.1
+            # 26.1
+            # 27.1
+            # 28.1
+            # 29.1
+
+
+            # 'cedente_agencia': 1607,
+            #     'cedente_agencia_conta_dv': '',
+            #     'cedente_agencia_dv': '1',
+            #     'cedente_conta': 333166,
+            #     'cedente_conta_dv': '0',
+            #     'cedente_convenio': '0001222130126',
+            #     'cedente_nome': 'ABGF AGENCIA BRAS. GESTORA',
+            #     'controle_banco': 1,
+            #     'controle_lote': 1,
+            #     'controle_registro': 1,
+            #     'empresa_endereco_cep': 20090,
+            #     'empresa_endereco_cep_complemento': '003',
+            #     'empresa_endereco_cidade': 'RIO DE JANEIRO',
+            #     'empresa_endereco_complemento': '',
+            #     'empresa_endereco_estado': 'RJ',
+            #     'empresa_endereco_numero': 0,
+            #     'empresa_inscricao_numero': 17909518000226,
+            #     'empresa_inscricao_tipo': 2,
+            #     'empresa_logradouro': 'AVENIDA RIO BRANCO, N 1, 9 AND',
+            #     'indicativo_forma_pagamento': '',
+            #     'mensagem1': '',
+            #     'ocorrencias': '',
+            #
+            #
+
+            #
+            #     'vazio1': ''}
+
+
+
+
+
             # CONTROLE
             # 01.3A
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
@@ -279,7 +364,7 @@ class Cnab240(Cnab):
             'favorecido_conta_dv': line.bank_id.acc_number_dig[1] if
             len(line.bank_id.bra_number_dig) > 1 else '',
             # 15.3A
-            'favorecido_nome': line.partner_id.name,
+            'favorecido_nome': line.partner_id.name[:30],
 
             # CREDITO
             # 16.3A -
@@ -318,9 +403,11 @@ class Cnab240(Cnab):
             # 'ocorrencias': '',
 
             # REGISTRO B
+            # Preenchido no registro A
             # 01.3B
             # 02.3B
             # 03.3B
+
             # 04.3B
             # 05.3B
             # 06.3B
@@ -343,9 +430,11 @@ class Cnab240(Cnab):
             'favorecido_endereco_cidade':
                 line.partner_id.l10n_br_city_id.name or '',
             # 14.3B
-            'favorecido_cep': int(line.partner_id.zip[:5]) or 0,
+            # 'favorecido_cep': int(line.partner_id.zip[:5]) or 0,
+            'favorecido_cep': self.get_cep('prefixo', line.partner_id.zip),
             # 15.3B
-            'favorecido_cep_complemento': line.partner_id.zip[6:9] or '',
+            'favorecido_cep_complemento':
+                self.get_cep('sulfixo', line.partner_id.zip),
             # 16.3B
             'favorecido_estado': line.partner_id.state_id.code or '',
 
