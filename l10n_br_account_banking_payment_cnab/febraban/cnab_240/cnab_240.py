@@ -153,6 +153,88 @@ class Cnab240(Cnab):
 
         return header_arquivo
 
+    def _prepare_header_lote(self):
+        """
+        Preparar o header de LOTE para arquivo do CNAB
+        :return: dict - Header do arquivo 
+        """
+        empresa = self.order.mode.bank_id.partner_id
+
+        header_arquivo_lote = {
+
+            # CONTROLE
+            # 01.1
+            'controle_banco': int(self.order.mode.bank_id.bank_bic),
+            # 02.1  Sequencia para o Arquivo
+            'controle_lote': 1,
+            # 03.1  0- Header do Arquivo
+            'controle_registro': 1,
+
+            # SERVICO
+            # 04.1 # Header do lote sempre 'C'
+            'servico_operacao': 'C',
+            # 05.1
+            'servico_servico': self.order.tipo_servico,
+            # 06.1
+            'servico_forma_lancamento': 1,
+            # 07.1
+            'servico_layout': 20,
+            # 08.1
+            # CNAB - Uso Exclusivo da FEBRABAN/CNAB
+
+            # EMPRESA CEDENTE
+            # 09.1
+            'empresa_inscricao_tipo': 2,
+                # self.get_inscricao_tipo(self.order.company_id.partner_id),
+            # 10.1
+            'empresa_inscricao_numero': punctuation_rm(empresa.cnpj_cpf),
+            # 11.1
+            'cedente_convenio': self.order.codigo_convenio,
+            # 12.1
+            'cedente_agencia':
+                int(self.order.mode.bank_id.bra_number),
+            # 13.1
+            'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
+            # 14.1
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
+            # 15.1
+            'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig[0],
+            # 16.1
+            'cedente_agencia_conta_dv':
+                self.order.mode.bank_id.acc_number_dig[1]
+                if len(self.order.mode.bank_id.acc_number_dig) > 1 else '',
+            # 17.1
+            'cedente_nome':
+                self.order.mode.bank_id.partner_id.legal_name[:30],
+            # 18.1
+            'mensagem1': '',
+
+            # ENDERECO
+            # 19.1
+            'empresa_logradouro': empresa.street,
+            # 20.1
+            'empresa_endereco_numero': empresa.number,
+            # 21.1
+            'empresa_endereco_complemento': empresa.street2,
+            # 22.1
+            'empresa_endereco_cidade': empresa.l10n_br_city_id.name,
+            # 23.1
+            'empresa_endereco_cep': self.get_cep('prefixo', empresa.zip),
+            # 24.1
+            'empresa_endereco_cep_complemento':
+                self.get_cep('sufixo', empresa.zip),
+            # 25.1
+            'empresa_endereco_estado': empresa.state_id.code,
+
+            # 26.1
+            'indicativo_forma_pagamento': '',
+            # 27.1
+            # CNAB - Uso Exclusivo FEBRABAN / CNAB
+            # 28.1
+            'ocorrencias': '',
+        }
+        return header_arquivo_lote
+
     def get_file_numeration(self):
         numero = self.order.get_next_number()
         if not numero:
@@ -249,85 +331,7 @@ class Cnab240(Cnab):
         """
         vals = {
 
-            # HEADER DO LOTE
-            #  CONTROLE
-            # 01.1
-            'controle_banco': int(self.order.mode.bank_id.bank_bic),
-            # 02.1
-            'controle_lote': 1,
-            # 03.1
-            'controle_registro': 3,
-
-            # SERVICO
-            # 04.1
-            'servico_operacao': 'C',
-            # 05.1
-            'servico_servico': 30,
-            # 06.1
-            'servico_forma_lancamento': 1,
-            # 07.1
-            'servico_layout': 20,
-            # 08.1
-            # CNAB - Uso Exclusivo da FEBRABAN/CNAB
-
-            # EMPRESA
-            # 09.1
-            'empresa_inscricao_tipo': 2,
-            # 10.1
-
-            # 11.1
-            # 12.1
-            # 13.1
-            # 14.1
-            # 15.1
-            # 16.1
-            # 17.1
-            # 18.1
-            # 19.1
-            # 20.1
-            # 21.1
-            # 22.1
-            # 23.1
-            # 24.1
-            # 25.1
-            # 26.1
-            # 27.1
-            # 28.1
-            # 29.1
-
-
-            # 'cedente_agencia': 1607,
-            #     'cedente_agencia_conta_dv': '',
-            #     'cedente_agencia_dv': '1',
-            #     'cedente_conta': 333166,
-            #     'cedente_conta_dv': '0',
-            #     'cedente_convenio': '0001222130126',
-            #     'cedente_nome': 'ABGF AGENCIA BRAS. GESTORA',
-            #     'controle_banco': 1,
-            #     'controle_lote': 1,
-            #     'controle_registro': 1,
-            #     'empresa_endereco_cep': 20090,
-            #     'empresa_endereco_cep_complemento': '003',
-            #     'empresa_endereco_cidade': 'RIO DE JANEIRO',
-            #     'empresa_endereco_complemento': '',
-            #     'empresa_endereco_estado': 'RJ',
-            #     'empresa_endereco_numero': 0,
-            #     'empresa_inscricao_numero': 17909518000226,
-            #     'empresa_inscricao_tipo': 2,
-            #     'empresa_logradouro': 'AVENIDA RIO BRANCO, N 1, 9 AND',
-            #     'indicativo_forma_pagamento': '',
-            #     'mensagem1': '',
-            #     'ocorrencias': '',
-            #
-            #
-
-            #
-            #     'vazio1': ''}
-
-
-
-
-
+            # SEGMENTO A
             # CONTROLE
             # 01.3A
             'controle_banco': int(self.order.mode.bank_id.bank_bic),
@@ -343,9 +347,9 @@ class Cnab240(Cnab):
             # 05.3A
             #   Segmento Código de Segmento do Reg.Detalhe
             # 06.3A
-            'servico_tipo_movimento': self.order.tipo_movimento or 1,
+            'servico_tipo_movimento': self.order.tipo_movimento,
             # 07.3A
-            'servico_codigo_movimento': self.order.tipo_movimento or 00,
+            'servico_codigo_movimento': self.order.codigo_instrucao_movimento,
 
             # FAVORECIDO
             # 08.3A - 018-TED 700-DOC
@@ -359,12 +363,13 @@ class Cnab240(Cnab):
             # 12.3A
             'favorecido_conta': int(line.bank_id.acc_number),
             # 13.3A
-            'favorecido_dv': line.bank_id.acc_number_dig[0],
+            'favorecido_conta_dv': line.bank_id.acc_number_dig[0],
             # 14.3A
-            'favorecido_conta_dv': line.bank_id.acc_number_dig[1] if
-            len(line.bank_id.bra_number_dig) > 1 else '',
+            'favorecido_dv': line.bank_id.acc_number_dig[1]
+                if len(line.bank_id.bra_number_dig) > 1 else '',
+
             # 15.3A
-            'favorecido_nome': line.partner_id.name[:30],
+            'favorecido_nome': line.partner_id.name,
 
             # CREDITO
             # 16.3A -
@@ -379,7 +384,7 @@ class Cnab240(Cnab):
             'credito_valor_pagamento':
                 Decimal(str(line.amount_currency)).quantize(Decimal('1.00')),
             # 21.3A
-            # 'credito_nosso_numero': '',
+            # 'credito_nosLoteso_numero': '',
             # 22.3A
             # 'credito_data_real': '',
             # 23.3A
@@ -402,8 +407,8 @@ class Cnab240(Cnab):
             'aviso_ao_favorecido': 0,
             # 'ocorrencias': '',
 
-            # REGISTRO B
-            # Preenchido no registro A
+            # SEGMENTO B
+            # Preenchido no segmento A
             # 01.3B
             # 02.3B
             # 03.3B
@@ -414,7 +419,8 @@ class Cnab240(Cnab):
 
             # DADOS COMPLEMENTARES - FAVORECIDOS
             # 07.3B
-            'favorecido_tipo_inscricao': self.inscricao_tipo(line.partner_id),
+            'favorecido_tipo_inscricao':
+                self.get_inscricao_tipo(line.partner_id),
             # 08.3B
             'favorecido_num_inscricao':
                 int(punctuation_rm(line.partner_id.cnpj_cpf)),
@@ -434,7 +440,7 @@ class Cnab240(Cnab):
             'favorecido_cep': self.get_cep('prefixo', line.partner_id.zip),
             # 15.3B
             'favorecido_cep_complemento':
-                self.get_cep('sulfixo', line.partner_id.zip),
+                self.get_cep('sufixo', line.partner_id.zip),
             # 16.3B
             'favorecido_estado': line.partner_id.state_id.code or '',
 
