@@ -236,10 +236,8 @@ class Cnab240(Cnab):
         return header_arquivo_lote
 
     def get_file_numeration(self):
-        numero = self.order.get_next_number()
-        if not numero:
-            numero = 1
-        return numero
+        # Função para retornar a numeração sequencial do arquivo
+        return 1
 
     def _prepare_cobranca(self, line):
         """
