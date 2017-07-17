@@ -156,7 +156,7 @@ class Cnab240(Cnab):
     def _prepare_header_lote(self):
         """
         Preparar o header de LOTE para arquivo do CNAB
-        :return: dict - Header do arquivo 
+        :return: dict - Header do arquivo
         """
         empresa = self.order.mode.bank_id.partner_id
 
@@ -185,7 +185,7 @@ class Cnab240(Cnab):
             # EMPRESA CEDENTE
             # 09.1
             'empresa_inscricao_tipo': 2,
-                # self.get_inscricao_tipo(self.order.company_id.partner_id),
+            # self.get_inscricao_tipo(self.order.company_id.partner_id),
             # 10.1
             'empresa_inscricao_numero': punctuation_rm(empresa.cnpj_cpf),
             # 11.1
@@ -300,8 +300,8 @@ class Cnab240(Cnab):
             'sacado_endereco': (
                 line.partner_id.street + ' ' + line.partner_id.number),
             'sacado_bairro': line.partner_id.district,
-            'sacado_cep': int(prefixo),
-            'sacado_cep_sufixo': int(sufixo),
+            'sacado_cep': self.get_cep('prefixo', line.partner_id.zip),
+            'sacado_cep_sufixo': self.get_cep('sufixo', line.partner_id.zip),
             'sacado_cidade': line.partner_id.l10n_br_city_id.name,
             'sacado_uf': line.partner_id.state_id.code,
             'codigo_protesto': int(self.order.mode.boleto_protesto),
@@ -315,7 +315,7 @@ class Cnab240(Cnab):
     def _prepare_pagamento(self, line):
         """
         Prepara um dict para preencher os valores do segmento A e B apartir de
-        uma linha da payment.order e insere informações que irão compor o 
+        uma linha da payment.order e insere informações que irão compor o
         header do lote
         :param line: payment.line - linha que sera base para evento
         :return: dict - Dict contendo todas informações dos segmentos
@@ -355,10 +355,10 @@ class Cnab240(Cnab):
             'favorecido_conta': punctuation_rm(line.bank_id.acc_number),
             # 13.3A
             'favorecido_conta_dv': line.bank_id.acc_number_dig[0]
-                if line.bank_id.acc_number_dig else '',
+            if line.bank_id.acc_number_dig else '',
             # 14.3A
             'favorecido_dv': line.bank_id.acc_number_dig[1]
-                if len(line.bank_id.bra_number_dig or '') > 1 else '',
+            if len(line.bank_id.bra_number_dig or '') > 1 else '',
             # 15.3A
             'favorecido_nome': line.partner_id.name,
 
@@ -523,10 +523,9 @@ class Cnab240(Cnab):
 
     def get_cep(self, tipo, value):
         '''
-        
-        :param tipo: 
-        :param value: 
-        :return: 
+        :param tipo:
+        :param value:
+        :return:
         '''
         if not value:
             if tipo == 'prefixo':
