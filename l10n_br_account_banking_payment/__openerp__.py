@@ -33,7 +33,6 @@
     'category': 'Banking addons',
     'depends': [
         'l10n_br_account',
-        'l10n_br_account',
         'account_banking_payment_export',
     ],
     'data': [
@@ -42,7 +41,7 @@
         'views/payment_mode.xml',
         'views/payment_mode_type.xml',
         'wizard/payment_order_create_view.xml',
-        'data/payment_mode_type.xml',
+        # 'data/payment_mode_type.xml',
     ],
     'demo': [
     ],

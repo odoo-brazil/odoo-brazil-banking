@@ -37,9 +37,9 @@
         'l10n_br_account_payment_boleto',
         'l10n_br_account_payment_mode',
         'l10n_br_account_product',
-        'account_banking_payment_export',
     ],
     'data': [
+        'security/cnab_cobranca_security.xml',
         'view/l10n_br_payment_cnab.xml',
         'view/payment_order.xml',
         'view/l10n_br_cnab_sequence.xml',
@@ -47,12 +47,18 @@
         'view/l10n_br_cobranca_cnab_lines.xml',
         'view/account_move_line.xml',
         'view/res_partner_bank.xml',
+        'view/l10n_br_cnab_retorno_view.xml',
         'view/payment_mode.xml',
+        'view/payment_line.xml',
+        'view/bank_payment_line.xml',
         'data/l10n_br_payment_export_type.xml',
-        'data/l10n_br_payment_mode.xml',
+        'security/ir.model.access.csv',
+    ],
+    'demo': [
+        # 'demo/l10n_br_payment_mode.xml',
     ],
     'test': [
-        'tests/invoice_create.yml'
+        # 'tests/invoice_create.yml'
     ],
     "installable": True,
     "auto_install": False,

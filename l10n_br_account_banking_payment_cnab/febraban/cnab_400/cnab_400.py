@@ -136,8 +136,6 @@ class Cnab400(Cnab):
             'cedente_conta_dv': (self.order.mode.bank_id.acc_number_dig),
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
             'cedente_nome': self.order.company_id.legal_name,
-            # DV ag e conta
-            'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
             'arquivo_codigo': 1,  # Remessa/Retorno
             'servico_operacao': u'R',
             'nome_banco': unicode(self.order.mode.bank_id.bank_name),
@@ -176,7 +174,7 @@ class Cnab400(Cnab):
     def codificar(self, texto):
         return texto.encode('utf-8')
 
-    def _prepare_segmento(self, line):
+    def _prepare_cobranca(self, line):
         """
         :param line:
         :return:
@@ -236,8 +234,6 @@ class Cnab400(Cnab):
             'cedente_conta': int(self.order.mode.bank_id.acc_number),
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig,
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
-            # DV ag e cc
-            'cedente_dv_ag_cc': (self.order.mode.bank_id.bra_acc_dig),
             'identificacao_titulo': u'0000000',  # TODO
             'identificacao_titulo_banco': u'0000000',  # TODO
             'identificacao_titulo_empresa': line.move_line_id.move_id.name,
@@ -303,7 +299,7 @@ class Cnab400(Cnab):
         self.order = order
         self.arquivo = ArquivoCobranca400(self.bank, **self._prepare_header())
         for line in order.line_ids:
-            self.arquivo.incluir_cobranca(**self._prepare_segmento(line))
+            self.arquivo.incluir_cobranca(**self._prepare_cobranca(line))
             self.arquivo.trailer.num_seq_registro = self.controle_linha
 
         remessa = unicode(self.arquivo)

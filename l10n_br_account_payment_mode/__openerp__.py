@@ -8,14 +8,13 @@
     'version': '8.0.1.0.0',
     'category': 'Banking addons',
     'license': 'AGPL-3',
-    'summary': '',
     'author': "KMEE, Odoo Community Association (OCA)",
     "website": "https://odoo-community.org/",
     'depends': [
-        'l10n_br_account',
         'l10n_br_data_base',
         'account_due_list_payment_mode',
-        'account_banking_payment_export'
+        'account_banking_payment_export',
+        'l10n_br_account_banking_payment',
     ],
     'data': [
         'views/payment_mode_view.xml',

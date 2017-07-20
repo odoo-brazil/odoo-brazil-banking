@@ -26,6 +26,7 @@
 from openerp import models, fields, api
 from openerp.addons import decimal_precision as dp
 from openerp.tools.float_utils import float_round as round
+from openerp.exceptions import ValidationError
 
 
 class PaymentOrder(models.Model):
@@ -40,6 +41,17 @@ class PaymentOrder(models.Model):
     @api.one
     def _compute_total(self):
         self.total = sum(self.mapped('line_ids.amount') or [0.0])
+
+    @api.multi
+    def action_open(self):
+        """
+        Validacao para nao confirmar ordem de pagamento vazia
+        """
+        for record in self:
+            if not record.line_ids:
+                raise ValidationError("Impossivel confirmar linha vazia!")
+        res = super(PaymentOrder, self).action_open()
+        return res
 
 
 class PaymentLine(models.Model):
@@ -58,8 +70,8 @@ class PaymentLine(models.Model):
         cntry = partner_record.country_id and \
             partner_record.country_id.name or ''
         cnpj = partner_record.cnpj_cpf or ''
-        return partner_record.legal_name + "\n" + cnpj + "\n" + st + ", " \
-            + n + "  " + st1 + "\n" + zip_city + "\n" + cntry
+        return partner_record.legal_name or '' + "\n" + cnpj + "\n" + st \
+            + ", " + n + "  " + st1 + "\n" + zip_city + "\n" + cntry
 
     @api.one
     @api.depends('percent_interest', 'amount_currency')

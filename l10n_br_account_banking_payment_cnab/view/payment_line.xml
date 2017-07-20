@@ -1,0 +1,37 @@
+<openerp>
+    <data>
+        <record id="view_payment_order_form" model="ir.ui.view">
+            <field name="name">payment.order.form</field>
+            <field name="inherit_id" ref="account_banking_payment_export.view_payment_order_form" />
+            <field name="model">payment.order</field>
+            <field name="arch" type="xml">
+                <field name="line_ids" position="attributes">
+                    <attribute name="context">{'order_id': active_id or False,
+                                               'default_mode': mode}</attribute>
+                </field>
+                <xpath expr="//field[@name='line_ids']/form/notebook" position="before">
+                    <group name="cnab">
+                        <field name="seu_numero"/>
+                        <field name="codigo_finalidade_doc"/>
+                        <field name="codigo_finalidade_ted"/>
+                        <field name="codigo_finalidade_complementar"/>
+                        <field name="aviso_ao_favorecido"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_payment_line_form" model="ir.ui.view">
+            <field name="name">payment.line.form</field>
+            <field name="model">payment.line</field>
+            <field name="inherit_id" ref="account_payment.view_payment_line_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <header>
+                        <field name="state2" widget="statusbar" nolabel="1" statusbar_visible="draft,wait,paid" />
+                    </header>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
