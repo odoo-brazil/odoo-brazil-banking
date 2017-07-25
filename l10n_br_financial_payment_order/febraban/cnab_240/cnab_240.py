@@ -114,8 +114,7 @@ class Cnab240(Cnab):
             # 09.0
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
             # 10.0
-            'cedente_conta':
-                int(punctuation_rm(self.order.mode.bank_id.acc_number)),
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
             # 11.0
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig[0],
             # 12.0
@@ -124,9 +123,7 @@ class Cnab240(Cnab):
                 if len(self.order.mode.bank_id.acc_number_dig) > 1 else '',
             # 13.0
             'cedente_nome':
-                self.order.mode.bank_id.partner_id.legal_name[:30]
-                if self.order.mode.bank_id.partner_id.legal_name
-                else self.order.mode.bank_id.partner_id.name[:30],
+                self.order.mode.bank_id.partner_id.legal_name[:30],
             # 14.0
             'nome_banco': self.order.mode.bank_id.bank_name,
             # 15.0
@@ -176,7 +173,7 @@ class Cnab240(Cnab):
             # 04.1 # Header do lote sempre 'C'
             'servico_operacao': 'C',
             # 05.1
-            'servico_servico': self.order.tipo_servico,
+            'servico_servico': self.order.order.mode.tipo_servico,
             # 06.1
             'servico_forma_lancamento': 1,
             # 07.1
@@ -191,15 +188,14 @@ class Cnab240(Cnab):
             # 10.1
             'empresa_inscricao_numero': punctuation_rm(empresa.cnpj_cpf),
             # 11.1
-            'cedente_convenio': self.order.codigo_convenio,
+            'cedente_convenio': self.order.mode.convenio,
             # 12.1
             'cedente_agencia':
                 int(self.order.mode.bank_id.bra_number),
             # 13.1
             'cedente_agencia_dv': self.order.mode.bank_id.bra_number_dig,
             # 14.1
-            'cedente_conta':
-                int(punctuation_rm(self.order.mode.bank_id.acc_number)),
+            'cedente_conta': int(self.order.mode.bank_id.acc_number),
             # 15.1
             'cedente_conta_dv': self.order.mode.bank_id.acc_number_dig[0],
             # 16.1
@@ -208,9 +204,7 @@ class Cnab240(Cnab):
                 if len(self.order.mode.bank_id.acc_number_dig) > 1 else '',
             # 17.1
             'cedente_nome':
-                self.order.mode.bank_id.partner_id.legal_name[:30]
-                if self.order.mode.bank_id.partner_id.legal_name
-                else self.order.mode.bank_id.partner_id.name[:30],
+                self.order.mode.bank_id.partner_id.legal_name[:30],
             # 18.1
             'mensagem1': '',
 
@@ -343,9 +337,9 @@ class Cnab240(Cnab):
             # 05.3A
             #   Segmento Código de Segmento do Reg.Detalhe
             # 06.3A
-            'servico_tipo_movimento': self.order.tipo_movimento,
+            'servico_tipo_movimento': self.order.mode.tipo_servico_complemento,
             # 07.3A
-            'servico_codigo_movimento': self.order.codigo_instrucao_movimento,
+            'servico_codigo_movimento': self.order.mode.instrucao_movimento,
 
             # FAVORECIDO
             # 08.3A - 018-TED 700-DOC
@@ -392,11 +386,11 @@ class Cnab240(Cnab):
             # 25.3A
             # 'codigo_finalidade_doc': line.codigo_finalidade_doc,
             # 26.3A
-            'codigo_finalidade_ted': line.codigo_finalidade_ted or '',
+            'codigo_finalidade_ted': self.order.mode.finalidade_ted or ''
             # 27.3A
             'codigo_finalidade_complementar':
-                line.codigo_finalidade_complementar or '',
-            # 28.3A
+                self.order.mode.finalidade_complementar or '',
+        # 28.3A
             # CNAB - Uso Exclusivo FEBRABAN/CNAB
             # 29.3A
             # 'aviso_ao_favorecido': line.aviso_ao_favorecido,

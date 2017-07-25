@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Account Payment Boleto module for Odoo
-#    Copyright (C) 2012-2015 KMEE (http://www.kmee.com.br)
-#    @author Luis Felipe Miléo <mileo@kmee.com.br>
+#    Copyright (C) 2009 EduSense BV (<http://www.edusense.nl>).
+#              (C) 2011 - 2013 Therp BV (<http://therp.nl>).
+#
+#    All other contributions are (C) by their respective contributors
+#
+#    All Rights Reserved
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,25 +23,20 @@
 #
 ##############################################################################
 
-from openerp import models, fields
+"""This module contains a single "wizard" for confirming manual
+bank transfers.
+"""
+
+from openerp import models, api, workflow
 
 
-class ResCompany(models.Model):
-    _inherit = 'res.company'
+class PaymentManual(models.TransientModel):
+    _inherit = 'payment.manual'
+    _description = 'Send payment order(s) manually'
 
-    own_number_type = fields.Selection(
-        selection=[
-            ('0', u'Sequêncial único por empresa'),
-            ('1', u'Numero sequêncial da Fatura'),
-            ('2', u'Sequêncial único por modo de pagamento'), ],
-        string=u'Tipo de nosso número',
-        default='2'
-    )
-
-    own_number_sequence = fields.Many2one(
-        comodel_name='ir.sequence',
-        string=u'Sequência do Nosso Número'
-    )
-
-    transaction_id_sequence = fields.Many2one('ir.sequence',
-                                              string=u'Sequência da fatura')
+    @api.multi
+    def button_ok(self):
+        for order_id in self.env.context.get('active_ids', []):
+            workflow.trg_validate(self.env.uid, 'payment.order', order_id,
+                                  'generated', self.env.cr)
+        return {'type': 'ir.actions.act_window_close'}

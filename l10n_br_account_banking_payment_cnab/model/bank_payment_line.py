@@ -3,13 +3,6 @@ from openerp import models, fields, api
 from ..constantes import COMPLEMENTO_TIPO_SERVICO, CODIGO_FINALIDADE_TED, \
     AVISO_FAVORECIDO
 
-STATE = [
-    ('draft', 'Draft'),
-    ('wait', 'Waiting Paiment'),
-    ('exception', 'Exception'),
-    ('paid', 'Paid'),
-]
-
 
 class BankPaymentLine(models.Model):
     _inherit = 'bank.payment.line'
@@ -82,11 +75,6 @@ class BankPaymentLine(models.Model):
         help=u'Campo G048 do CNAB',
         default=0.00
     )
-    state2 = fields.Selection(
-        string="State",
-        selection=STATE,
-        default="draft",
-    )
     evento_id = fields.One2many(
         string="Eventos CNAB",
         comodel_name="l10n.br.cnab.evento",
@@ -98,3 +86,23 @@ class BankPaymentLine(models.Model):
         string=u'Código de finalidade complementar',
         help=u'Campo P013 do CNAB',
     )
+
+    @api.model
+    def same_fields_payment_line_and_bank_payment_line(self):
+        """
+        This list of fields is used both to compute the grouping
+        hashcode and to copy the values from payment line
+        to bank payment line
+        The fields must have the same name on the 2 objects
+        """
+        same_fields = super(
+            BankPaymentLine, self
+        ).same_fields_payment_line_and_bank_payment_line()
+
+        # TODO: Implementar campo brasileiros que permitem mesclar linhas
+
+        # same_fields = [
+        #     'currency', 'partner_id',
+        #     'bank_id', 'date', 'state']
+
+        return same_fields
