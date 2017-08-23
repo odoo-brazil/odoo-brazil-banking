@@ -20,18 +20,16 @@
 #
 ##############################################################################
 
-import tempfile
 import datetime
-from openerp.tools.translate import _
-from openerp.addons.account_bank_statement_import.parserlib import (
-    BankStatement)
+import tempfile
+
+from openerp import _
 
 try:
-    import cnab240
     from cnab240.tipos import Arquivo
     import codecs
 except:
-    raise Exception(_('Please install python lib cnab240'))
+    raise Exception(_('Please install python lib PyCNAB'))
 
 
 class Cnab240Parser(object):
